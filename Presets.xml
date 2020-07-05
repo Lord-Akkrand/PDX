@@ -1,0 +1,26 @@
+<Fleets>
+    <Fleet Name="Fast">
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.4" Organisation="40" Torpedo="18" />
+    </Fleet>
+    <Fleet Name="Slow">
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    </Fleet>
+    <Fleet Name="TI Fast">
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="13.5" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="13.5" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="13.5" HitPoints="136.4" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 1" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="13.5" HitPoints="136.4" Organisation="40" Torpedo="18" />
+    </Fleet>
+    <Fleet Name="TI Slow">
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="13.5" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="13.5" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="13.5" HitPoints="136.5" Organisation="40" Torpedo="18" />
+        <Ship Name="CL36 2" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="13.5" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    </Fleet>
+</Fleets>
