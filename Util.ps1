@@ -11,6 +11,19 @@ function Deep-Copy($obj)
     return $ret
 }
 
+
+function Lerp($x, $min, $max)
+{
+    return (($max - $min) * $x) + $min
+}
+
+function Clamp($val, $min, $max)
+{
+    $val = [Math]::Max($val, $min)
+    $val = [Math]::Min($val, $max)
+    return $val
+}
+
 function Get-Data($path)
 {
     [xml]$readXML = Get-Content -Path $path
