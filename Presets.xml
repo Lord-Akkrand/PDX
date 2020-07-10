@@ -1,5 +1,0 @@
-<Ships>
-    <Ship Name="TICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="13.5" HitPoints="136.5" Organisation="40" Torpedo="18" />
-    <Ship Name="Angelo TICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="37.29" Visibility="10.8" HitPoints="136.5" Organisation="40" Torpedo="18" />
-    <Ship Name="OtherConceal TICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="10.8" HitPoints="136.5" Organisation="40" Torpedo="18" />
-</Ships>

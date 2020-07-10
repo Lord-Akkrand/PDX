@@ -1,0 +1,5 @@
+<Ships>
+    <Ship Name="ATICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="37.29" Visibility="10.8" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    <Ship Name="ATICA36" Hull="CA" HeavyAttack="10" HeavyPiercing="10" LightAttack="14.7" LightPiercing="7.0" Armor="20" Speed="42.57" Visibility="12.95" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    <Ship Name="Convoy" Hull="Convoy" HitPoints="136.5" />
+</Ships>

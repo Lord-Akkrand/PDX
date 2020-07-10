@@ -1,7 +1,7 @@
 param
 (
-    [String]$PresetsPath="Presets",
-    [String]$OutputFile="Compare.csv"
+    [String]$ShipsPath="Ships",
+    [String]$OutputFile="ShipCompare.csv"
 )
 $ErrorActionPreference = 'Stop'
 $HomeLocation = $PWD
@@ -18,35 +18,35 @@ $OutputFile = $(Join-Path -Path $HomeLocation -ChildPath $OutputFile)
 
 function Test-Presets()
 {
-    $PresetsPath = Get-Path $PresetsPath
-    $PresetFleets = @()
+    $ShipsPath = Get-Path $ShipsPath
+    $PresetShips = @()
 
-    Get-ChildItem $PresetsPath -Filter *.xml | 
+    Get-ChildItem $ShipsPath -Filter *.xml | 
     Foreach-Object {
         Write-Host("Found <{0}>" -f $_.FullName)
         $fleet = Import-Clixml -Path $_.FullName
-        $PresetFleets += $fleet
+        $PresetShips += $fleet
     }
 
     $progressId = 0
     $outputHeader = ""
     
-    foreach($fleetA in $PresetFleets)
+    foreach($shipA in $PresetShips)
     {
-        $outputHeader = ("{0}, {1}" -f $outputHeader, $fleetA.Name)
+        $outputHeader = ("{0}, {1}" -f $outputHeader, $shipA.Name)
     }
     Set-Content -Path $OutputFile -Value $outputHeader
 
-    foreach($fleetA in $PresetFleets)
+    foreach($shipA in $PresetShips)
     {
-        $row = $fleetA.Name
-        foreach($fleetB in $PresetFleets)
+        $row = $shipA.Name
+        foreach($shipB in $PresetShips)
         {
             $progressId++
-            if ($fleetA.Name -ne $fleetB.Name)
+            if ($shipA.Name -ne $shipB.Name)
             {
-                $copyA = Deep-Copy $fleetA
-                $copyB = Deep-Copy $fleetB
+                $copyA = Deep-Copy $shipA
+                $copyB = Deep-Copy $shipB
                 $stats = Fight $copyA $copyB
                 $row = ("{0}, {1}" -f $row, $stats)
             }

@@ -31,12 +31,13 @@ function Get-Data($path)
     return $readXML
 }
 
-function Get-FleetPath($path)
+function Get-Path($originalPath)
 {
-    $path = Join-Path -Path $PSScriptRoot -ChildPath $path
+    $path = Join-Path -Path $PSScriptRoot -ChildPath $originalPath
     If(!(Test-Path $path))
     {
-        New-Item -ItemType Directory -Force -Path $path
+        Write-Host("Creating {0} in {1}..." -f $originalPath, $PSScriptRoot)
+        return New-Item -ItemType "Directory" -Path $PSScriptRoot -Name $originalPath
     }
     return $path
 }

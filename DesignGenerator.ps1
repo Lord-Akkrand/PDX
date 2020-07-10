@@ -1,6 +1,6 @@
 param
 (
-    [String]$PresetsPath="Presets"
+    [String]$ShipsBasePath="Ships"
 )
 $ErrorActionPreference = 'Stop'
 
@@ -12,15 +12,16 @@ $UtilPath = $(Join-Path -Path $HomeLocation -ChildPath 'Util.ps1')
 
 . $UtilPath
 
-$PresetsPath = Get-FleetPath $PresetsPath
+$ShipsPath = Get-Path $ShipsBasePath
 
-$PresetsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Presets.xml")
+$ShipsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Ships.xml")
 
-function Save-Ship($ship, $path)
+function Save-Ship($ship)
 {
-    Write-Host("Save-Ship({0}, {1}" -f $ship, $path)
-    $filename = Join-Path -Path $path -ChildPath ($ship["Name"] + ".xml")
-    Export-Clixml -Path $filename -InputObject $ship -Force
+    $filename = ("{0}.xml" -f $ship["Name"])
+    $fullpath = Join-Path -Path $ShipsPath -ChildPath $filename
+    Write-Host("Save-Ship({0})" -f $ship["Name"])
+    Export-Clixml -Path $fullpath -InputObject $ship -Force
 }
 
 function Is-Screen($hull)
@@ -35,8 +36,8 @@ function Get-Profile($ship)
     {
         return 120
     }
-    
-    return ($ship.Visibility * 100.0) / $ship.Speed
+    $retVal = ($ship.Visibility / $ship.Speed) * 100.0
+    return $retVal
 }
 
 function Xml-To-Ship($xmlShip)
@@ -62,15 +63,15 @@ function Xml-To-Ship($xmlShip)
 function Create-Presets($xmlFile)
 {
     Write-Host "Create Presets"
+    
     foreach ($shipXML in $xmlFile.Ships.ChildNodes)
     {
         $thisShip = Xml-To-Ship $shipXML
-
-        Save-Ship $thisShip $PresetsPath
+        Save-Ship $thisShip
     }
 }
 
-Create-Presets $PresetsXML
+Create-Presets $ShipsXML
 
 
 
