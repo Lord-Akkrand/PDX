@@ -1,12 +1,10 @@
 param
 (
-    [String]$PresetsPath="Presets",
-    [String]$OutputFile="Compare.csv"
+    [String]$FleetsPath="Fleets",
+    [String]$OutputFile="FleetCompare.csv"
 )
 $ErrorActionPreference = 'Stop'
 $HomeLocation = $PWD
-
-
 
 $UtilPath = $(Join-Path -Path $HomeLocation -ChildPath 'Util.ps1')
 $NavalPath = $(Join-Path -Path $HomeLocation -ChildPath 'NavalCombat.ps1')
@@ -18,10 +16,10 @@ $OutputFile = $(Join-Path -Path $HomeLocation -ChildPath $OutputFile)
 
 function Test-Presets()
 {
-    $PresetsPath = Get-Path $PresetsPath
+    $FleetsPath = Get-Path $FleetsPath
     $PresetFleets = @()
 
-    Get-ChildItem $PresetsPath -Filter *.xml | 
+    Get-ChildItem $FleetsPath -Filter *.xml | 
     Foreach-Object {
         Write-Host("Found <{0}>" -f $_.FullName)
         $fleet = Import-Clixml -Path $_.FullName
@@ -47,7 +45,7 @@ function Test-Presets()
             {
                 $copyA = Deep-Copy $fleetA
                 $copyB = Deep-Copy $fleetB
-                $stats = Fight $copyA $copyB
+                $stats = Fleet-Engagement $copyA $copyB
                 $row = ("{0}, {1}" -f $row, $stats)
             }
             else {

@@ -24,9 +24,36 @@ function Save-Ship($ship)
     Export-Clixml -Path $fullpath -InputObject $ship -Force
 }
 
-function Is-Screen($hull)
+function Set-Type($ship)
 {
-    return ($hull -eq "DD" -or $hull -eq "CL")
+    $hull = $ship["Hull"]
+    $screen = 0
+    $capital = 0
+    $carrier = 0
+    $submarine = 0
+    $convoy = 0
+    
+    if ($hull -eq "DD" -or $hull -eq "CL")
+    {
+        $screen = 1
+    }
+    elseif ($hull -eq "CA" -or $hull -eq "BC" -or $hull -eq "BB") {
+        $capital = 1
+    }
+    elseif ($hull -eq "CV") {
+        $carrier = 1
+    }
+    elseif ($hull -eq "SS") {
+        $submarine = 1
+    }
+    elseif ($hull -eq "Convoy") {
+        $convoy = 1
+    }
+    $ship.Screen = $screen
+    $ship.Capital = $capital
+    $ship.Carrier = $carrier
+    $ship.Submarine = $submarine
+    $ship.Convoy = $convoy
 }
 
 function Get-Profile($ship)
@@ -54,7 +81,8 @@ function Xml-To-Ship($xmlShip)
     $thisShip["HP"] = $thisShip["HitPoints"]
     $thisShip["Organisation"] = $xmlShip.Organisation -as [double]
     $thisShip["Torpedo"] = $xmlShip.Torpedo -as [double]
-    $thisShip["Screen"] = Is-Screen $thisShip["Hull"]
+    Set-Type($thisShip)
+    
 
     $thisShip["Profile"] = Get-Profile $thisShip
     return $thisShip

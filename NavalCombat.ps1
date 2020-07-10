@@ -4,8 +4,6 @@ $HomeLocation = $PWD
 
 Import-Module $(Join-Path -Path $HomeLocation -ChildPath 'Util.ps1') -WarningAction SilentlyContinue
 
-$global:ShipA = $null
-$global:ShipB = $null
 $global:Round = 0
 
 function Update-Damage($ship)
@@ -39,7 +37,7 @@ function Fire-Heavy($ship, $target)
     }
 }
 
-function Fire-Light($ship, $targetFleet)
+function Fire-Light($ship, $target)
 {
     if ($ship.LightAttack -gt 0)
     {
@@ -47,7 +45,7 @@ function Fire-Light($ship, $targetFleet)
     }
 }
 
-function Fire-Torpedo($ship, $targetFleet)
+function Fire-Torpedo($ship, $target)
 {
     if ($ship.TorpedoAttack -gt 0)
     {
@@ -55,7 +53,7 @@ function Fire-Torpedo($ship, $targetFleet)
     }
 }
 
-function Ship-Fire($ship, $target)
+function Ship-FireAll($ship, $target)
 {
     Fire-Heavy $ship $target
     Fire-Light $ship $target
@@ -64,30 +62,129 @@ function Ship-Fire($ship, $target)
 
 function Exchange-Fire($shipA, $shipB)
 {
-    Ship-Fire $shipA $shipB
-    Ship-Fire $shipB $shipA
+    Ship-FireAll $shipA $shipB
+    Ship-FireAll $shipB $shipA
 }
 
-function Fight($aShip, $bShip)
+function Engage-Heavy($ship, $targetFleet)
 {
-    $global:ShipA = $aShip
-    $global:ShipB = $bShip
-    Write-Host("Fight {0} vs {1}" -F $aShip.Name, $bShip.Name)
+
+}
+
+function Ship-Fire($ship, $targetFleet)
+{
+    Engage-Heavy $ship $targetFleet
+    Engage-Light $ship $targetFleet
+    Engage-Torpedo $ship $targetFleet
+}
+
+function Fleet-Fire($fleet, $targetFleet)
+{
+    foreach ($ship in $fleet)
+    {
+        if ($ship.Alive)
+        {
+            Ship-Fire $ship $targetFleet
+        }
+    }
+}
+
+function Fleets-Fire($fleetA, $fleetB)
+{
+    Fleet-Fire $fleetA $fleetB
+    Fleet-Fire $fleetB $fleetA
+}
+
+function Fight($shipA, $shipB)
+{
+    Write-Host("Fight {0} vs {1}" -F $shipA.Name, $shipB.Name)
  
-    Update-Damage $global:ShipA
-    Update-Damage $global:ShipB
+    Update-Damage $shipA
+    Update-Damage $shipB
     while ($true)
     {
-        Exchange-Fire $global:ShipA $global:ShipB
+        Exchange-Fire $shipA $shipB
 
-        Update-Damage $global:ShipA
-        Update-Damage $global:ShipB
+        Update-Damage $shipA
+        Update-Damage $shipB
 
-        if ($global:ShipA.Alive -eq $false -or $global:ShipB.Alive -eq $false)
+        if ($shipA.Alive -eq $false -or $shipB.Alive -eq $false)
         {
-            $shipADamage = $global:ShipB.HP - $global:ShipB.HitPoints
-            $shipBDamage = $global:ShipA.HP - $global:ShipA.HitPoints
+            $shipADamage = $shipB.HP - $shipB.HitPoints
+            $shipBDamage = $shipA.HP - $shipA.HitPoints
             return ($shipADamage / ($shipADamage + $shipBDamage))
+        }
+    }
+}
+
+function Update-Fleet($fleet)
+{
+    $alive = $false
+    $hitPoints = 0
+    $screens = 0
+    $capitals = 0
+    $carriers = 0
+    $submarines = 0
+    $convoys = 0
+    foreach ($ship in $fleet)
+    {
+        Update-Damage $ship
+        $alive = $alive -or $ship.Alive
+        $hitPoints += $ship.HitPoints
+        if ($ship.Alive)
+        {
+            $screens += $ship.Screen
+            $capitals += $ship.Capitals
+            $carriers += $ship.Carriers
+            $submarines += $ship.Submarines
+            $convoys += $ship.Convoys
+        }
+    }
+    $fleet.Alive = $alive
+    $fleet.HitPoints = $hitPoints
+    $fleet.Screens = $screens
+    $fleet.Capitals = $capitals
+    $fleet.Carriers = $carriers
+    $fleet.Submarines = $submarines
+    $fleet.Convoys = $convoys
+
+    $requiredScreens = ($capitals + $carriers) * 4.0
+    if ($requiredScreens -gt 0)
+    {
+        $fleet.ScreeningEfficiency = Clamp ($screens / $requiredScreens) 0.0 1.0
+    }
+    else
+    {
+        $fleet.ScreeningEfficiency = 1
+    }
+
+    if ($carriers -gt 0)
+    {
+        $fleet.CarrierScreeningEfficiency = Clamp ($capitals / $carriers) 0.0 1.0
+    }
+    else
+    {
+        $fleet.CarrierScreeningEfficiency = 1
+    }
+}
+
+function Fleet-Engagement($fleetA, $fleetB)
+{
+    Write-Host("Fleet Engagement {0} vs {1}" -F $fleetA.Name, $fleetB.Name)
+    Update-Fleet $fleetA
+    Update-Fleet $fleetB
+
+    while ($true)
+    {
+        Fleets-Fire $fleetA $fleetA
+
+        Update-Damage $shipA
+        Update-Damage $shipB
+        if ($fleetA.Alive -eq $false -or $fleetB.Alive -eq $false)
+        {
+            $fleetADamage = $fleetB.HP - $fleetB.HitPoints
+            $fleetBDamage = $fleetA.HP - $fleetA.HitPoints
+            return ($fleetADamage / ($fleetADamage + $fleetBDamage))
         }
     }
 }
