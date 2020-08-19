@@ -15,6 +15,7 @@ $UtilPath = $(Join-Path -Path $HomeLocation -ChildPath 'Util.ps1')
 $ShipsPath = Get-Path $ShipsBasePath
 
 $ShipsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Ships.xml")
+$FleetsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Fleets.xml")
 
 function Save-Ship($ship)
 {
@@ -100,6 +101,8 @@ function Create-Presets($xmlFile)
 }
 
 Create-Presets $ShipsXML
+
+Create-Fleets $FleetsXML
 
 
 

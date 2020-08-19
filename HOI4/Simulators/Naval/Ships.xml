@@ -1,0 +1,13 @@
+<Ships>
+    <Ship Name="CL36.1" Hull="CL" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3559"/>
+    <Ship Name="CL36.2" Hull="CL" LightAttack="5.2" LightPiercing="7.0" Armor="8" Speed="35.8" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3617" />
+    <Ship Name="CL36.3" Hull="CL" LightAttack="9.4" LightPiercing="7.0" Armor="8" Speed="35.1" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3893" />
+    <Ship Name="CL36.4" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="4209" />
+    <Ship Name="CA36.1" Hull="CA" HeavyAttack="9.4" HeavyPiercing="25" LightAttack="17.8" LightPiercing="7.0" Armor="0" Speed="35.0" Visibility="18.5" HitPoints="182.0" Organisation="50" Torpedo="0" Cost="4405" />
+    <Ship Name="CA36.2" Hull="CA" HeavyAttack="18.9" HeavyPiercing="25" LightAttack="12.6" LightPiercing="7.0" Armor="0" Speed="34.4" Visibility="18.5" HitPoints="198.0" Organisation="50" Torpedo="0" Cost="4405" />
+    <!--
+    <Ship Name="ATICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="37.29" Visibility="10.8" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    <Ship Name="ATICA36" Hull="CA" HeavyAttack="10" HeavyPiercing="10" LightAttack="14.7" LightPiercing="7.0" Armor="20" Speed="42.57" Visibility="12.95" HitPoints="136.5" Organisation="40" Torpedo="18" />
+    <Ship Name="Convoy" Hull="Convoy" HitPoints="136.5" /> 
+    -->
+</Ships>
