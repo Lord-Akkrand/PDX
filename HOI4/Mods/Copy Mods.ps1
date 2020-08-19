@@ -1,8 +1,11 @@
 param
 (
-    [String]$ModsPath="C:\Users\lorda\Documents\Paradox Interactive\Hearts of Iron IV\mod"
+    [String]$RelativeModsPath="Paradox Interactive\Hearts of Iron IV\mod"
 )
 $ErrorActionPreference = 'Stop'
+
+$DocumentsPath = [Environment]::GetFolderPath("MyDocuments")
+$ModsPath = Join-Path $DocumentsPath -ChildPath $RelativeModsPath
 
 function Get-Tree($Path,$Include='*') { 
     @(Get-Item $Path -Include $Include -Force) + 
