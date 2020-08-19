@@ -69,13 +69,7 @@ units = {
 		task_force = {
 			name = "1 Koku Sentai" # A part of "Dai 1 Kantai"
 			location = 9998  #Yokosuka
-			ship = { name = "Ryujo" definition = carrier equipment = { ship_hull_carrier_1 = { amount = 1 owner = JAP version_name = "Ryujo Class" } } 				
-				air_wings = { 
-					cv_fighter_equipment_0 =  { owner = "JAP" amount = 24 } # historical 24
-					cv_CAS_equipment_1 = { owner = "JAP" amount = 12 } 	# historical 12
-				}
-			}
-			#Dai 5 Kuchikutai
+			ship = { name = "Ryujo" definition = battleship start_experience_factor = 0.5 equipment = { ship_hull_heavy_1 = {amount = 1 owner = JAP version_name = "Fuso/Ise Class"} } }
 			ship = { name = "Asakaze" definition = destroyer start_experience_factor = 0.25 equipment = { ship_hull_light_1 = {amount = 1 owner = JAP version_name = "Mutsuki Class"} } }
 			ship = { name = "Harukaze" definition = destroyer start_experience_factor = 0.25 equipment = { ship_hull_light_1 = {amount = 1 owner = JAP version_name = "Mutsuki Class"} } }
 			ship = { name = "Matsukaze" definition = destroyer start_experience_factor = 0.25 equipment = { ship_hull_light_1 = {amount = 1 owner = JAP version_name = "Mutsuki Class"} } }
@@ -118,13 +112,7 @@ units = {
 			ship = { name = "Aoba" definition = heavy_cruiser start_experience_factor = 0.25 equipment = { ship_hull_cruiser_1 = {amount = 1 owner = JAP version_name = "Aoba Class"} } }
 			ship = { name = "Kinugasa" definition = heavy_cruiser start_experience_factor = 0.25 equipment = { ship_hull_cruiser_1 = {amount = 1 owner = JAP version_name = "Aoba Class"} } }
 			# Dai 2 Koku Sentai
-			ship = { name = "Kaga" definition = carrier start_experience_factor = 0.35 equipment = { ship_hull_carrier_conversion_bb = {amount = 1 owner = JAP version_name = "Kaga Class"} } 			
-				air_wings = { 
-					cv_fighter_equipment_0 =  { owner = "JAP" amount = 16 } # historical 16
-					cv_CAS_equipment_1 = { owner = "JAP" amount = 16 } # historical 16
-					cv_nav_bomber_equipment_1 =  { owner = "JAP" amount = 28 } # historical 28
-				}
-			}
+			ship = { name = "Kaga" definition = battleship start_experience_factor = 0.5 equipment = { ship_hull_heavy_1 = {amount = 1 owner = JAP version_name = "Nagato Class" } } }
 		}
 		task_force = {	
 			name = "2 Suirai Sentai" #A part of "Dai 2 Kantai"
@@ -177,19 +165,8 @@ units = {
 			location = 9950  #Sasebo
 			ship = { name = "Kongo" definition = battle_cruiser start_experience_factor = 0.5 equipment = { ship_hull_heavy_1 = {amount = 1 owner = JAP version_name = "Kongo Class"} } }
 			ship = { name = "Kirishima" definition = battle_cruiser start_experience_factor = 0.5 equipment = { ship_hull_heavy_1 = {amount = 1 owner = JAP version_name = "Kongo Class"} } }
-			ship = { name = "Akagi" definition = carrier start_experience_factor = 0.5 equipment = { ship_hull_carrier_conversion_bb = {amount = 1 owner = JAP version_name = "Akagi Class"} } 				
-				air_wings = { 
-					cv_fighter_equipment_0 =  { owner = "JAP" amount = 12 } 	# historical 12
-					cv_CAS_equipment_1 = { owner = "JAP" amount = 12 } 			# historical 18
-					cv_nav_bomber_equipment_1 =  { owner = "JAP" amount = 36 } 	# historical 36
-				}
-			}	
-			ship = { name = "Hosho" definition = carrier equipment = { ship_hull_carrier_conversion_ca = {amount = 1 owner = JAP version_name = "Hosho Class"} } 				
-				air_wings = { 
-					cv_fighter_equipment_0 =  { owner = "JAP" amount = 10 } 	
-					cv_nav_bomber_equipment_1 =  { owner = "JAP" amount = 5 } 	
-				}
-			}
+			ship = { name = "Akagi" definition = battleship start_experience_factor = 0.5 equipment = { ship_hull_heavy_1 = {amount = 1 owner = JAP version_name = "Nagato Class" } } }
+			ship = { name = "Hosho" definition = heavy_cruiser start_experience_factor = 0.5 equipment = { ship_hull_cruiser_2 = {amount = 1 owner = JAP version_name = "Myoko Class"} } }
 			ship = { name = "Natori" definition = light_cruiser equipment = { ship_hull_cruiser_1 = {amount = 1 owner = JAP version_name = "Kuma/Nagara Class"} } }
 			ship = { name = "Yura" definition = light_cruiser equipment = { ship_hull_cruiser_1 = {amount = 1 owner = JAP version_name = "Kuma/Nagara Class"} } }
 			ship = { name = "Kitakami" definition = light_cruiser equipment = { ship_hull_cruiser_1 = {amount = 1 owner = JAP version_name = "Kuma/Nagara Class"} } }
@@ -399,9 +376,9 @@ instant_effect =
 		# CV (x1): "Soryu"
 		add_equipment_production = {				
 			equipment = {
-				type = ship_hull_carrier_1
+				type = ship_hull_heavy_1
 				creator = "JAP" 
-				version_name = "Soryu Class"
+				version_name = "Fuso/Ise Class"
 			}
 			requested_factories = 1
 			progress = 0.66
@@ -410,12 +387,12 @@ instant_effect =
 		}
 		add_equipment_production = {				
 			equipment = {
-				type = ship_hull_carrier_conversion_ca
+				type = ship_hull_cruiser_2
 				creator = "JAP" 
-				version_name = "Zuiho Class"
+				version_name = "Mogami Class"
 			}
 			requested_factories = 1
-			progress = 0.15
+			progress = 0.2
 
 			amount = 2
 		}

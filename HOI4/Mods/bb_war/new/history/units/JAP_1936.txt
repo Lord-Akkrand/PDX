@@ -703,26 +703,26 @@ air_wings = {
 	# 1 Rengo Kokutai -- Taiwan
 	524 = {
 		# Kizarazu Kokutai -- Aichi D1A2
-		cv_CAS_equipment_1 = {
+		CAS_equipment_1 = {
 			owner = "JAP" 
-			amount = 61
+			amount = 60
 		}
 		# Kanoya Kokutai -- Aichi D1A2
-		cv_CAS_equipment_1 = {
+		CAS_equipment_1 = {
 			owner = "JAP" 
-			amount = 62
+			amount = 60
 		}
 	}
 
 	# 2 Rengo Kokutai -- Taiwan
 	524 = {
 		# 12 Kokutai -- Nakajima A4N1
-		cv_fighter_equipment_0 = {
+		fighter_equipment_0 = {
 			owner = "JAP" 
 			amount = 72
 		}
 		# 13 Kokutai -- Mitsubishi B2M2
-		cv_nav_bomber_equipment_1 = {
+		tac_bomber_equipment_0 = {
 			owner = "JAP" 
 			amount = 48
 		}
@@ -730,19 +730,38 @@ air_wings = {
 
 	### Akagi CAG -- Hiroshima (while Akagi is refit)
 	529 = { 
-		cv_fighter_equipment_0 =  {
+		fighter_equipment_0 =  {
 			owner = "JAP" 
 			amount = 13
 		}
-		cv_CAS_equipment_1 = {
+		CAS_equipment_1 = {
 			owner = "JAP" 
 			amount = 8
 		}
-		cv_nav_bomber_equipment_1 =  {
+		tac_bomber_equipment_0 =  {
 			owner = "JAP" 
 			amount = 7
 		}
-
+		fighter_equipment_0 =  {
+			owner = "JAP" 
+			amount = 24
+		}
+		CAS_equipment_1 = {
+			owner = "JAP" 
+			amount = 12
+		}
+		fighter_equipment_0 =  {
+			owner = "JAP" 
+			amount = 38
+		}
+		CAS_equipment_1 = {
+			owner = "JAP" 
+			amount = 27
+		}
+		tac_bomber_equipment_0 =  {
+			owner = "JAP" 
+			amount = 69
+		}
 	}
 }
 
@@ -794,7 +813,7 @@ instant_effect =
 
 	add_equipment_production = {
 		equipment = {
-			type = cv_nav_bomber_equipment_1
+			type = tac_bomber_equipment_0
 			creator = "JAP" 
 		}
 		requested_factories = 1
