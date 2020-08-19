@@ -31,27 +31,9 @@ units= {
 		task_force = {					
 			name = "Carrier Division, Battle Force"		
 			location = 1562 # San Diego
-			ship = { name = "USS Ranger" definition = carrier start_experience_factor = 0.25 equipment = { ship_hull_carrier_1 = { amount = 1 owner = USA version_name = "Ranger Class" } } 
-				air_wings = {
-					cv_fighter_equipment_0 =  { owner = "USA" amount = 36 } # historical: 36
-					cv_CAS_equipment_1 =  { owner = "USA" amount = 12 } # historical: 15
-					cv_nav_bomber_equipment_1 =  { owner = "USA" amount = 12 } # historical: 12
-				}
-			}
-			ship = { name = "USS Lexington" definition = carrier start_experience_factor = 0.25 equipment = { ship_hull_carrier_conversion_bb = { amount = 1 owner = USA version_name = "Lexington Class" } } 
-				air_wings = {
-					cv_fighter_equipment_0 =  { owner = "USA" amount = 16 } # historical: 16
-					cv_CAS_equipment_1 =  { owner = "USA" amount = 30 } # historical: 30
-					cv_nav_bomber_equipment_1 =  { owner = "USA" amount = 12 } # historical: 12
-				}
-			}
-			ship = { name = "USS Saratoga" definition = carrier start_experience_factor = 0.25 equipment = { ship_hull_carrier_conversion_bb = { amount = 1 owner = USA version_name = "Lexington Class" } } 
-				air_wings = {
-					cv_fighter_equipment_0 =  { owner = "USA" amount = 16 } # historical: 16
-					cv_CAS_equipment_1 =  { owner = "USA" amount = 30 } # historical: 30
-					cv_nav_bomber_equipment_1 =  { owner = "USA" amount = 12 } # historical: 12
-				}
-			}
+			ship = { name = "USS Ranger" definition = battleship start_experience_factor = 0.25 equipment = { ship_hull_heavy_1 = { amount = 1 owner = USA version_name = "New York Class" } } }
+			ship = { name = "USS Lexington" definition = battleship start_experience_factor = 0.25 equipment = { ship_hull_heavy_1 = { amount = 1 owner = USA version_name = "Colorado Class" } } }
+			ship = { name = "USS Saratoga" definition = battleship start_experience_factor = 0.25 equipment = { ship_hull_heavy_1 = { amount = 1 owner = USA version_name = "Colorado Class" } } }
 		}					
 		task_force = {					
 			name = "Cruisers, Battle Force"
@@ -477,9 +459,9 @@ instant_effect = {
 	##2 Yorktowns (Yorktown, Enterprise)
 	add_equipment_production = {
 		equipment = {
-			type = ship_hull_carrier_1
+			type = ship_hull_heavy_1
 			creator = "USA"
-			version_name = "Yorktown Class"
+			version_name = "New York Class"
 		}
 		requested_factories = 2
 		progress = 0.50
@@ -487,9 +469,9 @@ instant_effect = {
 	}
 	add_equipment_production = {
 		equipment = {
-			type = ship_hull_carrier_1
+			type = ship_hull_heavy_1
 			creator = "USA"
-			version_name = "Yorktown Class"
+			version_name = "New York Class"
 		}
 		requested_factories = 2
 		progress = 0.40

@@ -534,13 +534,18 @@ air_wings = {
 		# 18th Pursuit Group 
 		fighter_equipment_0 =  {
 			owner = "USA" 
-			amount = 48
+			amount = 116
+		}
+		CAS_equipment_1 = {
+			owner = "USA" 
+			amount = 72
 		}
 		# 5th Composite Group 
 		tac_bomber_equipment_0 = {
 			owner = "USA" 
-			amount = 36
+			amount = 72
 		}
+
 	}
 
 	### 19th Composite Wing -- Panama Canal
@@ -569,7 +574,7 @@ air_wings = {
 	### USN Atlantic Naval Patrol Division -- Norfolk
 	362 = { 
 		# Naval Patrol Wing 3 
-		nav_bomber_equipment_1 =  {
+		tac_bomber_equipment_0 =  {
 			owner = "USA" 
 			amount = 36
 		}
@@ -578,7 +583,7 @@ air_wings = {
 	378 = { 
 		# Naval Patrol Wing 1 
 		# Naval Patrol Wing 2 
-		nav_bomber_equipment_1 =  {
+		tac_bomber_equipment_0 =  {
 			owner = "USA" 
 			amount = 72
 		}
@@ -623,7 +628,7 @@ instant_effect = {
 
 	add_equipment_production = {
 		equipment = {
-			type = cv_fighter_equipment_0
+			type = fighter_equipment_0
 			creator = "USA" 
 		}
 		requested_factories = 1
