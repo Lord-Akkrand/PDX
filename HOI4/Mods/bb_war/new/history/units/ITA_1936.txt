@@ -524,7 +524,7 @@ air_wings = {
 	# 4a Squadra Aerea - SQA4 (Bari)
 	156 = { 
 		# 9a Divisione Aerea 'Leone'
-		nav_bomber_equipment_1 = { 
+		tac_bomber_equipment_0 = { 
 			amount = 48 
 			owner = "ITA" 
 		} 
@@ -533,7 +533,7 @@ air_wings = {
 	# Aeronautica della Sardegna - ASAR (Cagliari)
 	114 = { 
 		# 10a Brigata Aerea 'Marte'
-		nav_bomber_equipment_1 = { 
+		tac_bomber_equipment_0 = { 
 			amount = 24 
 			owner = "ITA" 
 		} 
