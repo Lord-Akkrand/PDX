@@ -990,19 +990,19 @@ air_wings = {
 		# Groupement de Chasse du Nord-Africain
 		fighter_equipment_0 = {
 			owner = "FRA" 
-			amount = 48
+			amount = 66
 		}
 		# Groupement de Bombardment du Nord-Africain
 		tac_bomber_equipment_1 =  {
 			owner = "FRA" 
-			amount = 30
+			amount = 48
 		}
 	}
 
 	# Aeronautique Navale -- Cherbourg
 	15 = {
 		# Flotille F1
-		nav_bomber_equipment_1 = {
+		tac_bomber_equipment_1 = {
 			owner = "FRA" 
 			amount = 24
 		}
