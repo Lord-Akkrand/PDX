@@ -485,7 +485,7 @@ air_wings = {
 	### RAF Coastal Command
 	130 = { 
 		### No. 16 Coastal Command -- Vickers Vildebeests
-		nav_bomber_equipment_1 = {
+		tac_bomber_equipment_0 = {
 			owner = "ENG" 
 			amount = 24
 		}
@@ -529,7 +529,7 @@ air_wings = {
 	### RAF Far East
 	336 = { 
 		### RAF Far East
-		nav_bomber_equipment_1 = {
+		tac_bomber_equipment_0 = {
 			owner = "ENG" 
 			amount = 24
 		}
