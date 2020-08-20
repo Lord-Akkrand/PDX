@@ -38,6 +38,7 @@ $mod_folders | ForEach-Object {
     New-Item -Path $ModsPath -Name $mod_name -ItemType "directory"
     $new_base = Join-Path $ModsPath -ChildPath $mod_name
     Copy-Item -Path (Join-Path $mod_path -ChildPath ("{0}.mod" -f $mod_name)) -Destination $ModsPath
+    Copy-Item -Path (Join-Path $mod_path -ChildPath ("{0}.mod" -f $mod_name)) -Destination $new_base
     Copy-Item -Path (Join-Path $mod_path -ChildPath "thumbnail.png") -Destination $new_base
     Copy-Item -Path (Join-Path $mod_path -ChildPath "new\*") -Destination $new_base -Recurse
 }

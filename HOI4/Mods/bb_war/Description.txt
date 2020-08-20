@@ -1,0 +1,4 @@
+Replaces the starting carriers of USA, Japan, UK & France with battleships or cruisers of similar cost.
+Replaces all CV-aircraft with land-based equivalents.  
+Replaces all naval bombers with tactical bombers.
+Reduces the naval damage and targeting of all aircraft to zero.
