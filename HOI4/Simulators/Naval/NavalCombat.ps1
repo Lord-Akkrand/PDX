@@ -66,8 +66,123 @@ function Exchange-Fire($shipA, $shipB)
     Ship-FireAll $shipB $shipA
 }
 
+$TargetWeighting = @{
+    "Heavy"=@{
+        "Capital"=30;
+        "Screen"=3;
+        "Submarine"=4;
+        "Carrier"=1;
+        "Convoy"=60;
+    };
+    "Light"=@{
+        "Capital"=2;
+        "Screen"=6;
+        "Submarine"=4;
+        "Carrier"=1;
+        "Convoy"=4;
+    };
+}
+$TargetWeighting["Torpedo"] = Deep-Copy $TargetWeighting["Heavy"]
+
+
+function Available-Targets($weaponType, $targetFleet, $viableTargets)
+{
+    $screenViable = $TRUE
+    $capitalViable = $FALSE
+    $carrierViable = $FALSE
+    if ($weapontype -eq "Light")
+    {
+        $capitalViable = $targetFleet.Screens -le 0
+        $carrierViable = $capitalViable
+    }
+    elseif ($weapontype -eq "Torpedo") 
+    {
+        $randomRoll = Get-Random -Minimum 0.0 -Maximum 1.0
+        $capitalViable = $randomRoll -gt $targetFleet.ScreeningEfficiency
+
+        $randomRoll = Get-Random -Minimum 0.0 -Maximum 1.0
+        $carrierViable = $randomRoll -gt $targetFleet.CarrierScreeningEfficiency
+    }
+    elseif ($weapontype -eq "Heavy")
+    {
+        $capitalViable = $TRUE
+        $carrierViable = $TRUE
+    }
+    
+    foreach ($ship in $targetFleet.Ships) 
+    {
+        if ($ship.Screen -gt 0 -and $screenViable)    
+        {
+            $viableTargets.Add($ship) | Out-Null
+        }
+        if ($ship.Capital -gt 0 -and $capitalViable)
+        {
+            $viableTargets.Add($ship) | Out-Null
+        }
+        if ($ship.Carrier -gt 0 -and $carrierViable)
+        {
+            $viableTargets.Add($ship) | Out-Null
+        }
+    }
+}
+
+function Find-Target($shipType, $weaponType, $targetFleet)
+{
+    [System.Collections.ArrayList]$availableTargets = @()
+    Available-Targets $weaponType $targetFleet $availableTargets
+
+    [System.Collections.ArrayList]$weightedItems = @()
+
+    foreach ($ship in $availableTargets)
+    {
+        $weighting = $TargetWeighting[$weaponType][$ship["TargetType"]]
+        $weightedItems.Add(@{
+            "Weight"=$weighting;
+            "Ship"=$ship;
+        }) | Out-Null
+    }
+
+    $chosenItem = Weighted-Selection $weightedItems
+    if ($chosenItem -ne $null)
+    {
+        $ship = $chosenItem["Ship"]
+        return $ship
+    }
+    return $null
+}
+
+# submarine vs convoy: 600 (40)
+# non-sub vs convoy: 60 (4)
+
 function Engage-Heavy($ship, $targetFleet)
 {
+    # Pick a target then fire at it
+    $target = Find-Target $ship.Hull "Heavy" $targetFleet
+    if ($target)
+    {
+        Fire-Heavy $ship $target
+    }
+}
+
+function Engage-Light($ship, $targetFleet)
+{
+    # Pick a target then fire at it
+    $target = Find-Target $ship.Hull "Light" $targetFleet
+    if ($target)
+    {
+        Fire-Light $ship $target
+    }
+
+}
+
+function Engage-Torpedo($ship, $targetFleet)
+{
+    # Pick a target then fire at it
+    $target = Find-Target $ship.Hull "Torpedo" $targetFleet
+    if ($target)
+    {
+        Fire-Torpedo $ship $target
+    }
 
 }
 
@@ -80,7 +195,7 @@ function Ship-Fire($ship, $targetFleet)
 
 function Fleet-Fire($fleet, $targetFleet)
 {
-    foreach ($ship in $fleet)
+    foreach ($ship in $fleet.Ships)
     {
         if ($ship.Alive)
         {
@@ -126,7 +241,7 @@ function Update-Fleet($fleet)
     $carriers = 0
     $submarines = 0
     $convoys = 0
-    foreach ($ship in $fleet)
+    foreach ($ship in $fleet.Ships)
     {
         Update-Damage $ship
         $alive = $alive -or $ship.Alive
@@ -134,10 +249,10 @@ function Update-Fleet($fleet)
         if ($ship.Alive)
         {
             $screens += $ship.Screen
-            $capitals += $ship.Capitals
-            $carriers += $ship.Carriers
-            $submarines += $ship.Submarines
-            $convoys += $ship.Convoys
+            $capitals += $ship.Capital
+            $carriers += $ship.Carrier
+            $submarines += $ship.Submarine
+            $convoys += $ship.Convoy
         }
     }
     $fleet.Alive = $alive
@@ -176,10 +291,10 @@ function Fleet-Engagement($fleetA, $fleetB)
 
     while ($true)
     {
-        Fleets-Fire $fleetA $fleetA
+        Fleets-Fire $fleetA $fleetB
 
-        Update-Damage $shipA
-        Update-Damage $shipB
+        Update-Fleet $fleetA
+        Update-Fleet $fleetB
         if ($fleetA.Alive -eq $false -or $fleetB.Alive -eq $false)
         {
             $fleetADamage = $fleetB.HP - $fleetB.HitPoints

@@ -1,6 +1,7 @@
 param
 (
-    [String]$ShipsBasePath="Ships"
+    [String]$ShipsBasePath="Ships",
+    [String]$FleetsBasePath="Fleets"
 )
 $ErrorActionPreference = 'Stop'
 
@@ -13,6 +14,7 @@ $UtilPath = $(Join-Path -Path $HomeLocation -ChildPath 'Util.ps1')
 . $UtilPath
 
 $ShipsPath = Get-Path $ShipsBasePath
+$FleetsPath = Get-Path $FleetsBasePath
 
 $ShipsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Ships.xml")
 $FleetsXML = Get-Data (Join-Path -Path $PSScriptRoot -ChildPath "Fleets.xml")
@@ -25,6 +27,14 @@ function Save-Ship($ship)
     Export-Clixml -Path $fullpath -InputObject $ship -Force
 }
 
+function Save-Fleet($Fleet)
+{
+    $filename = ("{0}.xml" -f $fleet["Name"])
+    $fullpath = Join-Path -Path $FleetsPath -ChildPath $filename
+    Write-Host("Save-Fleet({0})" -f $fleet["Name"])
+    Export-Clixml -Path $fullpath -InputObject $fleet -Force
+}
+
 function Set-Type($ship)
 {
     $hull = $ship["Hull"]
@@ -34,27 +44,34 @@ function Set-Type($ship)
     $submarine = 0
     $convoy = 0
     
+    $targetType = "Unknown"
     if ($hull -eq "DD" -or $hull -eq "CL")
     {
         $screen = 1
+        $targetType = "Screen"
     }
     elseif ($hull -eq "CA" -or $hull -eq "BC" -or $hull -eq "BB") {
         $capital = 1
+        $targetType = "Capital"
     }
     elseif ($hull -eq "CV") {
         $carrier = 1
+        $targetType = "Carrier"
     }
     elseif ($hull -eq "SS") {
         $submarine = 1
+        $targetType = "Submarine"
     }
     elseif ($hull -eq "Convoy") {
         $convoy = 1
+        $targetType = "Convoy"
     }
     $ship.Screen = $screen
     $ship.Capital = $capital
     $ship.Carrier = $carrier
     $ship.Submarine = $submarine
     $ship.Convoy = $convoy
+    $ship.TargetType = $targetType
 }
 
 function Get-Profile($ship)
@@ -89,6 +106,8 @@ function Xml-To-Ship($xmlShip)
     return $thisShip
 }
 
+$allShips = @{}
+
 function Create-Presets($xmlFile)
 {
     Write-Host "Create Presets"
@@ -97,6 +116,40 @@ function Create-Presets($xmlFile)
     {
         $thisShip = Xml-To-Ship $shipXML
         Save-Ship $thisShip
+        $allShips[$thisShip["Name"]] = $thisShip
+    }
+}
+
+function Xml-To-Fleet($xmlFleet)
+{
+    $thisFleet = @{}
+    $thisFleet['Name'] = $xmlFleet.name -as [string]
+    $thisFleet['Ships'] = @()
+    foreach ($shipXML in $xmlFleet.ChildNodes)
+    {
+        if ($shipXML.Ref)
+        {
+            $shipName = $shipXML.Ref -as [string]
+            $thisShip = $allShips[$shipName]
+            $thisFleet['Ships'] += Deep-Copy $thisShip
+        }
+        else {
+            $thisShip = Xml-To-Ship $shipXML
+            $thisFleet['Ships'] += $thisShip
+        }
+    }
+    return $thisFleet
+}
+
+function Create-Fleets($xmlFile)
+{
+    Write-Host 'Create Fleets'
+
+    foreach ($fleetXML in $xmlFile.Fleets.ChildNodes)
+    {
+        $thisFleet = Xml-To-Fleet $fleetXML
+
+        Save-Fleet $thisFleet
     }
 }
 

@@ -5,4 +5,11 @@
         <Ship Ref="CL36.1" />
         <Ship Ref="CA36.1" />
     </Fleet>
+    <Fleet Name="Two">
+        <Ship Ref="CL36.1" />
+        <Ship Ref="CL36.1" />
+        <Ship Ref="CL36.1" />
+        <Ship Ref="CL36.1" />
+        <Ship Ref="CL36.1" />
+    </Fleet>
 </Fleets>

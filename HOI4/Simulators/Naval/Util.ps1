@@ -41,3 +41,33 @@ function Get-Path($originalPath)
     }
     return $path
 }
+
+function Weighted-Selection($listOfItems)
+{
+    $totalWeight = 0
+
+    foreach ($item in $listOfItems)
+    {
+        $weight = $item.Weight
+        $totalWeight += $weight
+    }
+
+    $randomRoll = Get-Random -Minimum 0.0 -Maximum $totalWeight
+
+    $runningWeight = 0
+    $chosenItem = $null
+    foreach ($item in $listOfItems)
+    {
+        $weight = $item.Weight
+        $runningWeight += $weight
+        if ($runningWeight -le $randomRoll)
+        {
+            $chosenItem = $item
+        }
+        else 
+        {
+            break
+        }
+    }
+    return $chosenItem
+}
