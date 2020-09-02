@@ -56,15 +56,16 @@ function Weighted-Selection($listOfItems)
 
     $runningWeight = 0
     $chosenItem = $null
+    if ($listOfItems.Count -gt 0)
+    {
+        $chosenItem = $listOfItems[0]
+    }
     foreach ($item in $listOfItems)
     {
         $weight = $item.Weight
         $runningWeight += $weight
-        if ($runningWeight -le $randomRoll)
-        {
-            $chosenItem = $item
-        }
-        else 
+        $chosenItem = $item
+        if ($runningWeight -ge $randomRoll)
         {
             break
         }

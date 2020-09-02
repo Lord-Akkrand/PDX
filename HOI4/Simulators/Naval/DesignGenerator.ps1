@@ -98,6 +98,7 @@ function Xml-To-Ship($xmlShip)
     $thisShip["HitPoints"] = $xmlShip.HitPoints -as [double]
     $thisShip["HP"] = $thisShip["HitPoints"]
     $thisShip["Organisation"] = $xmlShip.Organisation -as [double]
+    $thisShip["Org"] = $xmlShip.Organisation -as [double]
     $thisShip["Torpedo"] = $xmlShip.Torpedo -as [double]
     Set-Type($thisShip)
     

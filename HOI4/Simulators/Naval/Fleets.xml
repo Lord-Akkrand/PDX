@@ -1,15 +1,23 @@
 <Fleets>
-    <Fleet Name="One">
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
+    <Fleet Name="LightCA">
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
         <Ship Ref="CA36.1" />
     </Fleet>
-    <Fleet Name="Two">
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
-        <Ship Ref="CL36.1" />
+    <Fleet Name="HeavyCA">
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CA36.2" />
+    </Fleet>
+    <Fleet Name="AllScreen">
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
+        <Ship Ref="CL36.4" />
     </Fleet>
 </Fleets>

@@ -13,6 +13,7 @@ $OutputFile = $(Join-Path -Path $HomeLocation -ChildPath $OutputFile)
 . $UtilPath
 . $NavalPath
 
+Clear-Host
 
 function Test-Presets()
 {
