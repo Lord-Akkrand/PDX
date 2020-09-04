@@ -23,23 +23,43 @@ function Fire-Weapon($shots, $piercing, $hitProfile, $target, $screenModifier)
     if ($hitRoll -le $hitChance)
     {
         $damage = $shots
-        $critChance = 0.2
+        $critChance = 0.1
         if ($target.Armor -gt $piercing)
         {
             $pierced = ($piercing / $target.Armor)
             $damage = Lerp $pierced ($damage * 0.1) $damage
-            $critChance = 0.1
         }
+        else 
+        {
+            $critChance = 0.2
+        }
+        $reliabilityCritMod = 1.0 / $ship.Reliability
+        if ($weaponType -ne "Torpedo")
+        {
+            $critChance *= $reliabilityCritMod
+        }
+        $damageRandom = Get-Random -Minimum 0.85 -Maximum 1.15
+        $damage = $damage * $damageRandom
+        
         $critRoll = Get-Random -Minimum 0.0 -Maximum 1.0
         if ($critRoll -le $critChance)
         {
             $oldDamage = $damage
-            $damage *= 5.0
+            if ($weaponType -eq "Torpedo")
+            {
+                $damage *= 2.0
+            }
+            else 
+            {
+                $reliailityDamageMod = 1 - $ship.Reliability
+                $damageMod = Lerp $reliailityDamageMod 5.0 1.0
+                $damage *= ($damageMod + 1.0)
+            }
+            
             Write-Host("Critical Hit! {0}->{1}" -f [int]$oldDamage, [int]$damage)
         }
 
-        $damageRandom = Get-Random -Minimum 0.85 -Maximum 1.15
-        $damage = $damage * $damageRandom
+        
         $orgDamage = $damage * 1.6 * (1 - ($target.HitPoints / $target.HP))
         $strDamage = $damage * 1.0
         $hitPoints = $target.HitPoints -as [double]

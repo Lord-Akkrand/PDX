@@ -44,10 +44,17 @@ function Test-Presets()
             $progressId++
             if ($fleetA.Name -ne $fleetB.Name)
             {
-                $copyA = Deep-Copy $fleetA
-                $copyB = Deep-Copy $fleetB
-                $stats = Fleet-Engagement $copyA $copyB
-                $row = ("{0}, {1}" -f $row, $stats)
+                $total = 0.0
+                $count = 10
+                for ($i = 0; $i -lt $count; $i++)
+                {
+                    $copyA = Deep-Copy $fleetA
+                    $copyB = Deep-Copy $fleetB
+                    $stats = Fleet-Engagement $copyA $copyB
+                    $total += $stats
+                }
+                $avg = $total / [decimal]$count
+                $row = ("{0}, {1}" -f $row, $avg)
             }
             else {
                 $row = ("{0}, 0.5" -f $row)
