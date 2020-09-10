@@ -16,9 +16,15 @@ function Fire-Weapon($shots, $piercing, $hitProfile, $target, $screenModifier)
     # This profile is divided by the gun's hit profile (light: 45, heavy: 80, torpedo: 145, depth charge: 100) and then squared. It factors into the hit chance but can not increase it.
     $hitModifier = ($target.Profile / $hitProfile)
     $hitModifier = $hitModifier * $hitModifier
-    $hitChance = Clamp ($hitModifier * 0.1) 0.05 0.1
+    $hitChance = [Math]::Min(($hitModifier * 0.1), 0.1)
     $hitChance *= $screenModifier
+    $hitChance = [Math]::Max($hitChance, 0.05)
     $hitRoll = Get-Random -Minimum 0.0 -Maximum 1.0
+
+    if ($hitProfile -gt 50.0 -and $hitProfile -lt 100.0)
+    {
+        $hitProfile = 80.0
+    }
     
     if ($hitRoll -le $hitChance)
     {

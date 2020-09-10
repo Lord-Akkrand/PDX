@@ -90,6 +90,8 @@ function Xml-To-Ship($xmlShip)
     $thisShip = @{}
     $thisShip["Name"] = $xmlShip.Name -as [string]
     $thisShip["Hull"] = $xmlShip.Hull -as [string]
+    $thisShip["HeavyAttack"] = $xmlShip.HeavyAttack -as [double]
+    $thisShip["HeavyPiercing"] = $xmlShip.HeavyPiercing -as [double]
     $thisShip["LightAttack"] = $xmlShip.LightAttack -as [double]
     $thisShip["LightPiercing"] = $xmlShip.LightPiercing -as [double]
     $thisShip["Armor"] = $xmlShip.Armor -as [double]
@@ -126,6 +128,10 @@ function Xml-To-Fleet($xmlFleet)
 {
     $thisFleet = @{}
     $thisFleet['Name'] = $xmlFleet.name -as [string]
+    if ($thisFleet['Name'] -eq "#comment")
+    {
+        return $null
+    }
     $thisFleet['Ships'] = @()
     foreach ($shipXML in $xmlFleet.ChildNodes)
     {
@@ -150,8 +156,10 @@ function Create-Fleets($xmlFile)
     foreach ($fleetXML in $xmlFile.Fleets.ChildNodes)
     {
         $thisFleet = Xml-To-Fleet $fleetXML
-
-        Save-Fleet $thisFleet
+        if ($thisFleet -ne $null)
+        {
+            Save-Fleet $thisFleet
+        }
     }
 }
 

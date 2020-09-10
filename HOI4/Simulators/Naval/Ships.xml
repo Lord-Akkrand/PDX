@@ -2,9 +2,37 @@
     <Ship Name="CL36.1" Hull="CL" LightAttack="4.2" LightPiercing="5.5" Armor="8" Speed="36.1" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3559" Reliability="0.68"/>
     <Ship Name="CL36.2" Hull="CL" LightAttack="5.2" LightPiercing="7.0" Armor="8" Speed="35.8" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3617" Reliability="0.68" />
     <Ship Name="CL36.3" Hull="CL" LightAttack="9.4" LightPiercing="7.0" Armor="8" Speed="35.1" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="3893" Reliability="0.68" />
-    <Ship Name="CL36.4" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="4209" Reliability="0.68" />
+    <Ship Name="CL36.4" Hull="CL" LightAttack="15.4" LightPiercing="7.0" Armor="8" Speed="33.9" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="18" Cost="4244" Reliability="0.68" />
+    <Ship Name="CL36.5" Hull="CL" LightAttack="19.8" LightPiercing="7.0" Armor="8" Speed="33.6" Visibility="15" HitPoints="136.5" Organisation="40" Torpedo="0" Cost="4416" Reliability="0.68" />
     <Ship Name="CA36.1" Hull="CA" HeavyAttack="9.4" HeavyPiercing="25" LightAttack="17.8" LightPiercing="7.0" Armor="0" Speed="35.0" Visibility="18.5" HitPoints="182.0" Organisation="50" Torpedo="0" Cost="4405" Reliability="0.68" />
     <Ship Name="CA36.2" Hull="CA" HeavyAttack="18.9" HeavyPiercing="25" LightAttack="12.6" LightPiercing="7.0" Armor="0" Speed="34.4" Visibility="18.5" HitPoints="198.0" Organisation="50" Torpedo="0" Cost="4405" Reliability="0.68" />
+
+    <Ship Name="CA36.2F2S1P" Hull="CA" HeavyAttack="9.9" HeavyPiercing="25" LightAttack="13.2" LightPiercing="7.0" Armor="0" Speed="36.2" Visibility="18.5" HitPoints="154.0" Organisation="40" Torpedo="0" Cost="4160" Reliability="0.637" />
+    <Ship Name="CA36.2F1L2S1P" Hull="CA" HeavyAttack="9.9" HeavyPiercing="25" LightAttack="18.7" LightPiercing="7.0" Armor="0" Speed="35.0" Visibility="18.5" HitPoints="182.0" Organisation="40" Torpedo="0" Cost="4435" Reliability="0.637" />
+    <Ship Name="CA36.2F1L1S1T1P" Hull="CA" HeavyAttack="9.9" HeavyPiercing="25" LightAttack="14.3" LightPiercing="7.0" Armor="0" Speed="35.3" Visibility="18.5" HitPoints="182.0" Organisation="40" Torpedo="18" Cost="4285" Reliability="0.637" />
+    <Ship Name="CA36.2F1H2S1P" Hull="CA" HeavyAttack="19.8" HeavyPiercing="25" LightAttack="13.2" LightPiercing="7.0" Armor="0" Speed="34.4" Visibility="18.5" HitPoints="198.0" Organisation="40" Torpedo="0" Cost="4960" Reliability="0.637" />
+    <Ship Name="CA36.1F2S1P" Hull="CA" HeavyAttack="9.4" HeavyPiercing="25" LightAttack="12.6" LightPiercing="7.0" Armor="0" Speed="36.2" Visibility="18.5" HitPoints="154.0" Organisation="40" Torpedo="0" Cost="4130" Reliability="0.68" />
+    <Ship Name="CA36.1F1L2S1P" Hull="CA" HeavyAttack="9.4" HeavyPiercing="25" LightAttack="17.8" LightPiercing="7.0" Armor="0" Speed="35.0" Visibility="18.5" HitPoints="182.0" Organisation="40" Torpedo="0" Cost="4405" Reliability="0.68" />
+    <Ship Name="CA36.1F1H2S1P" Hull="CA" HeavyAttack="19.8" HeavyPiercing="25" LightAttack="12.6" LightPiercing="7.0" Armor="0" Speed="34.4" Visibility="18.5" HitPoints="198.0" Organisation="40" Torpedo="0" Cost="4930" Reliability="0.68" />
+
+    <Ship Name="BB36.1F4H" Hull="BB" HeavyAttack="73.5" HeavyPiercing="36" LightAttack="4.2" LightPiercing="7.0" Armor="31" Speed="21.7" Visibility="30" HitPoints="407" Organisation="40" Torpedo="0" Cost="15180" Reliability="0.68" />
+    <Ship Name="BB36.1F1H3S" Hull="BB" HeavyAttack="29.4" HeavyPiercing="36" LightAttack="16.8" LightPiercing="7.0" Armor="31" Speed="27.5" Visibility="30" HitPoints="407" Organisation="40" Torpedo="0" Cost="11184" Reliability="0.68" />
+    
+    <Ship Name="SHBB36.1F4H3S" Hull="BB" HeavyAttack="99.0" HeavyPiercing="50" LightAttack="17.6" LightPiercing="7.0" Armor="55" Speed="15.0" Visibility="30" HitPoints="770" Organisation="40" Torpedo="0" Cost="21563" Reliability="0.60" />
+    <Ship Name="SHBB36.1F2H5S" Hull="BB" HeavyAttack="59.4" HeavyPiercing="50" LightAttack="26.4" LightPiercing="7.0" Armor="55" Speed="20.1" Visibility="30" HitPoints="770" Organisation="40" Torpedo="0" Cost="17913" Reliability="0.60" />
+    <Ship Name="SHBB36.1F5S" Hull="BB" HeavyAttack="19.8" HeavyPiercing="50" LightAttack="26.4" LightPiercing="7.0" Armor="55" Speed="26.5" Visibility="30" HitPoints="770" Organisation="40" Torpedo="0" Cost="13663" Reliability="0.60" />
+
+    <Ship Name="Andrea Doria" Hull="BB" HeavyAttack="25.2" HeavyPiercing="31" LightAttack="6.3" LightPiercing="5.5" Armor="26" Speed="22.6" Visibility="30" HitPoints="367.5" Organisation="40" Torpedo="0" Cost="10250" Reliability="0.64" />
+    <Ship Name="Conte Di Cavour" Hull="BB" HeavyAttack="25.2" HeavyPiercing="31" LightAttack="6.3" LightPiercing="5.5" Armor="26" Speed="28.2" Visibility="30" HitPoints="367.5" Organisation="40" Torpedo="0" Cost="10609" Reliability="0.64" />
+    <Ship Name="Littorio" Hull="BB" HeavyAttack="29.4" HeavyPiercing="36" LightAttack="8.4" LightPiercing="4.0" Armor="31" Speed="27.8" Visibility="30" HitPoints="407.0" Organisation="40" Torpedo="0" Cost="11488" Reliability="0.68" />
+
+    <Ship Name="Taranto" Hull="CL" HeavyAttack="0" HeavyPiercing="" LightAttack="4.2" LightPiercing="5.5" Armor="6" Speed="27.2" Visibility="15" HitPoints="120.0" Organisation="40" Torpedo="18" Cost="2932" Reliability="0.64" />
+    <Ship Name="Montecuccoli" Hull="CL" HeavyAttack="0" HeavyPiercing="" LightAttack="10.5" LightPiercing="7.0" Armor="0" Speed="36.5" Visibility="15" HitPoints="130.0" Organisation="40" Torpedo="18" Cost="3612" Reliability="0.68" />
+    <Ship Name="Giussano" Hull="CL" HeavyAttack="0" HeavyPiercing="" LightAttack="10.5" LightPiercing="7.0" Armor="0" Speed="30.9" Visibility="15" HitPoints="120.0" Organisation="40" Torpedo="18" Cost="3331" Reliability="0.64" />
+    <Ship Name="Duca degli Abruzzi" Hull="CL" HeavyAttack="0" HeavyPiercing="" LightAttack="10.5" LightPiercing="7.0" Armor="6" Speed="35.0" Visibility="15" HitPoints="130.0" Organisation="40" Torpedo="18" Cost="4014" Reliability="0.68" />
+
+    <Ship Name="Curatone" Hull="DD" HeavyAttack="0" HeavyPiercing="" LightAttack="1.0" LightPiercing="1.0" Armor="0" Speed="35.4" Visibility="10" HitPoints="25.0" Organisation="40" Torpedo="18" Cost="841" Reliability="0.64" />
+    <Ship Name="Maestrale" Hull="DD" HeavyAttack="0" HeavyPiercing="" LightAttack="1.0" LightPiercing="1.0" Armor="0" Speed="38.1" Visibility="10" HitPoints="25.0" Organisation="40" Torpedo="18" Cost="964" Reliability="0.64" />
     <!--
     <Ship Name="ATICL36" Hull="CL" LightAttack="14.7" LightPiercing="7.0" Armor="8" Speed="37.29" Visibility="10.8" HitPoints="136.5" Organisation="40" Torpedo="18" />
     <Ship Name="ATICA36" Hull="CA" HeavyAttack="10" HeavyPiercing="10" LightAttack="14.7" LightPiercing="7.0" Armor="20" Speed="42.57" Visibility="12.95" HitPoints="136.5" Organisation="40" Torpedo="18" />
