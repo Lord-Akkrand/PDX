@@ -1,5 +1,13 @@
 $ErrorActionPreference = 'Stop'
 
+$HomeLocation = $PWD
+
+Import-Module ./Util -DisableNameChecking 
+$IMRP = $(Join-Path -Path $HomeLocation -ChildPath 'Import-ModuleRemotely.ps1')
+. $IMRP
+
+Import-Module ./Import-ModuleRemotely.ps1
+
 function Deep-Copy($obj)
 {
     $ms = New-Object System.IO.MemoryStream
@@ -60,6 +68,8 @@ function Initialise-JobQueue($title, $remoteHostList, $localJobData)
         Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
         $global:RemoteSessions.Add($session, $false)
         Write-Host "added session"
+        Import-ModuleRemotely "Util" $session
+        Write-Host "Util module added"
     }
     Write-Host "Remote Sessions Initialised"
 }
@@ -176,17 +186,27 @@ function Test-RemoteQueue()
                 $total += $value
             }
         }
+        elseif ($funcType -eq "Lerp") 
+        {
+            foreach ($value in $values)
+            {
+                Write-Host $value
+                $total = Lerp 0.5 $total ($total + $value)
+            }
+        }
         
         return $total
     }
 
     $task = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Multiply")}
     $task2 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Add")}
+    $task3 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Lerp")}
     
-    for ($i = 0; $i -lt 100; $i++)
+    for ($i = 0; $i -lt 1; $i++)
     {
         Add-JobToQueue $task
-        Add-JobToQueue $task2    
+        Add-JobToQueue $task2
+        Add-JobToQueue $task3
     }
 
     $returnValues = Running-JobQueue

@@ -28,7 +28,7 @@ if (get-module $moduleName)
 New-Module -name $moduleName {
 $($localModule.Definition)
 $exports;
-}  | import-module
+}  | import-module -DisableNameChecking 
 "@
     $script = [ScriptBlock]::Create($moduleString);
     invoke-command -session $session -scriptblock $script;
