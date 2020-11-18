@@ -2,11 +2,10 @@ $ErrorActionPreference = 'Stop'
 
 $HomeLocation = $PWD
 
-Import-Module ./Util -DisableNameChecking 
 $IMRP = $(Join-Path -Path $HomeLocation -ChildPath 'Import-ModuleRemotely.ps1')
 . $IMRP
 
-Import-Module ./Import-ModuleRemotely.ps1
+Import-Module ./Util -DisableNameChecking 
 
 function Deep-Copy($obj)
 {
@@ -43,7 +42,7 @@ function Add-JobToQueue($task)
 
 function Update-JobQueueProgress
 {
-    $status = ("Batches Started/Complete [Total] {0}/{1} [{2}]" -f $global:Running, $global:Finished, $global:Total)
+    $status = ("Batches Started/Complete [Total] {0}/{1} [{2}]" -f $global:Finished, $global:Total, $global:Running)
     $percentComplete = (($global:Finished) / $global:Total) * 100
     Write-Progress -Activity $global:Title -Status $status -Id $global:ProgressID -PercentComplete $percentComplete
 }
@@ -60,17 +59,53 @@ function Initialise-JobQueue($title, $remoteHostList, $localJobData)
     $global:RemoteHosts = $remoteHostList
 
     Write-Host "Initialise Remote Sessions"
-    foreach ($remoteHost in $global:RemoteHosts)
+    $sessions = New-PSSession -SSHConnection $global:RemoteHosts
+    foreach ($session in $sessions)
     {
-        $userName = $remoteHost.UserName
-        $hostName = $remoteHost.HostName
-        $session = New-PSSession -HostName $hostName -UserName $userName
         Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
         $global:RemoteSessions.Add($session, $false)
-        Write-Host "added session"
         Import-ModuleRemotely "Util" $session
-        Write-Host "Util module added"
     }
+
+    $unused = {
+        $threadSafeBag = @{}#[System.Collections.Concurrent.ConcurrentDictionary[object, bool]]::new()
+        Write-Host "Initialise Remote Sessions"
+        $initialiseHostsScriptBlock = {
+            $bag = $using:RemoteSessions#$using:threadSafeBag
+            $userName = $_.UserName
+            $hostName = $_.HostName
+            $session = New-PSSession -HostName $hostName -UserName $userName
+            Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
+            Import-Module ./Util -DisableNameChecking
+            Import-Module ./Import-ModuleRemotely.ps1
+            Import-ModuleRemotely "Util" $session
+            $unused = $bag.Add($session, $false)
+        }
+        $global:RemoteHosts | ForEach-Object -Parallel $initialiseHostsScriptBlock
+        
+        foreach ($session in $threadSafeBag.Keys)
+        {
+            Write-Host("Added session")
+            $global:RemoteSessions.Add($session, $false)
+        }
+    }
+    
+    $unused = 
+    {
+        foreach ($remoteHost in $global:RemoteHosts)
+        {
+            $userName = $remoteHost.UserName
+            $hostName = $remoteHost.HostName
+            Write-Host("Intialising session as {0} on {1}" -f $userName, $hostName)
+            $session = New-PSSession -HostName $hostName -UserName $userName
+            Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
+            $global:RemoteSessions.Add($session, $false)
+            Write-Host "added session"
+            Import-ModuleRemotely "Util" $session
+            Write-Host "Util module added"
+        }
+    }
+    
     Write-Host "Remote Sessions Initialised"
 }
 
@@ -95,13 +130,13 @@ function Running-JobQueue()
                 Remove-Job -Job $job
                 $global:RemoteSessions[$task.Session] = $false
                 $jobsToRemove += $jobName
+                $global:Finished++
+                $global:Running--
                 Update-JobQueueProgress
             }
 
             foreach ($jobReturn in $arrayOutput)
             {
-                $global:Finished++
-                $global:Running--
                 $returnValues[$jobName] = $jobReturn
 
                 Update-JobQueueProgress
@@ -147,6 +182,8 @@ function Running-JobQueue()
         }
     } while ($global:Running -gt 0 -or $JobQueue.Count -gt 0)
 
+    Update-JobQueueProgress
+
     Write-Host "Close Remote Sessions"
     foreach ($remoteSession in $global:RemoteSessions.GetEnumerator())
     {
@@ -162,9 +199,13 @@ function Running-JobQueue()
 
 function Test-RemoteQueue()
 {
-    $piHost = @{"UserName"="pi"; "HostName"="192.168.86.118"}
-    $localhost = @{"UserName"="lorda"; "HostName"="127.0.0.1"}
-    $remoteList = @($piHost, $piHost, $piHost, $piHost)
+    Get-Job | Remove-Job
+    Get-PSSession | Remove-PSSession
+
+    $piHost = @{"HostName"="pi@192.168.86.118"}
+    $localhost = @{"HostName"="lorda@127.0.0.1"}
+
+    $remoteList = @($piHost, $piHost, $piHost, $piHost, $localhost, $localhost, $localhost, $localhost)
     $localData = @{"Values"=@(1, 3, 5, 7, 11)}
     Initialise-JobQueue "Test" $remoteList $localData
     $testScriptBlock = { 
@@ -190,7 +231,6 @@ function Test-RemoteQueue()
         {
             foreach ($value in $values)
             {
-                Write-Host $value
                 $total = Lerp 0.5 $total ($total + $value)
             }
         }
@@ -202,7 +242,7 @@ function Test-RemoteQueue()
     $task2 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Add")}
     $task3 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Lerp")}
     
-    for ($i = 0; $i -lt 1; $i++)
+    for ($i = 0; $i -lt 1000; $i++)
     {
         Add-JobToQueue $task
         Add-JobToQueue $task2
@@ -214,7 +254,7 @@ function Test-RemoteQueue()
     {
         $jobName = $retValue.Key
         $ret = $retValue.Value
-        Write-Host("{0}:{1}" -f $jobName, $ret)
+        #Write-Host("{0}:{1}" -f $jobName, $ret)
     }
 }
 
