@@ -1,0 +1,31 @@
+<Playmats>
+    <Playmat Name="Agricultural">
+        <Column>
+            <Top>
+                <Action Name="Move" Gain=">>" UnlockGain=">" />
+                <Action Name="Gain" Gain="$" UnlockGain="$" />
+            </Top>
+            <Bottom Name="Upgrade" Cost="WW" Gain="#" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="TradeResources" Cost="$" Gain="??" />
+                <Action Name="TradePopularity" Cost="$" Gain="@" UnlockGain="@" />
+            </Top>
+            <Bottom Name="Deploy" Cost="MMMM" ReduceCost="MM" Gain="*" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="Produce" Cost="^@$" Gain="%%" UnlockGain="%" />
+            </Top>
+            <Bottom Name="Build" Cost="WWWW" ReduceCost="WW" Gain="+$$" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="BolsterPower" Cost="$" Gain="^^" UnlockGain="^" />
+                <Action Name="BolsterCard" Cost="$" Gain="=" UnlockGain="=" />
+            </Top>
+            <Bottom Name="Enlist" Cost="FFF" ReduceCost="FF" Gain="|$$$" />
+        </Column>
+    </Playmat>
+</Playmats>

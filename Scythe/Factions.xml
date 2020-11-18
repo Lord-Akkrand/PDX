@@ -1,0 +1,9 @@
+<Factions>
+    <Faction Name="Rusviet" Benefit="Repeat">
+        <Hexes>
+            <Hex Terrain="Village" XPosition="-1" YPosition="0" Workers="1" />
+            <Hex Terrain="Mountain" XPosition="-1" YPosition="1" Workers="1" />
+            <Hex Terrain="Village" XPosition="-2" YPosition="1" Workers="0" />
+        </Hexes>
+    </Faction>
+</Factions>
