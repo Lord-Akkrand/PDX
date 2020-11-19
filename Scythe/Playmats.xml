@@ -1,5 +1,5 @@
 <Playmats>
-    <Playmat Name="Agricultural">
+    <Playmat Name="Agricultural" Resources="@@@@$$$$$$$">
         <Column>
             <Top>
                 <Action Name="Move" Gain=">>" UnlockGain=">" />

@@ -11,6 +11,13 @@ function Deep-Copy($obj)
     return $ret
 }
 
+function Deep-Copy2($obj)
+{
+    $_TempCliXMLString  =   [System.Management.Automation.PSSerializer]::Serialize($obj, [int32]::MaxValue)
+    $ret          =   [System.Management.Automation.PSSerializer]::Deserialize($_TempCliXMLString)
+    return $ret
+}
+
 
 function Lerp($x, $min, $max)
 {

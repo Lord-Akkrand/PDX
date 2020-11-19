@@ -19,10 +19,19 @@ enum Resources {
     Recruit = [int][char]'|'
 }
 
-function Test-Combination($faction, $playmat, $rounds)
+function Step-Round($player)
 {
-    $retValue = ("Test Combination {0} {1} for {2} rounds" -f $faction.Name, $playmat.Name, $rounds)
-    return $retValue
+
+}
+
+function Test-Player($player, $rounds, $returnValue)
+{
+    $returnValue["Output"] = ("Test Player {1} for {1} rounds" -f $player.Name, $rounds)
+    $TempFile = New-TemporaryFile
+    Set-Content $TempFile.FullName -Value "Test"
+    Add-Content $TempFile.FullName -Value "Twice"
+    $returnValue["OutputFiles"] = @{}
+    $returnValue["OutputFiles"]["test.xml"] = $TempFile.FullName
 }
 
 Export-ModuleMember -Function * -Alias * -Variable * -Cmdlet *

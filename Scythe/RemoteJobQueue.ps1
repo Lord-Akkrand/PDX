@@ -59,51 +59,13 @@ function Initialise-JobQueue($title, $remoteHostList, $localJobData, $modules)
             Import-ModuleRemotely $mod $session
         }
     }
-
-    $unused = {
-        $threadSafeBag = @{}#[System.Collections.Concurrent.ConcurrentDictionary[object, bool]]::new()
-        Write-Host "Initialise Remote Sessions"
-        $initialiseHostsScriptBlock = {
-            $bag = $using:RemoteSessions#$using:threadSafeBag
-            $userName = $_.UserName
-            $hostName = $_.HostName
-            $session = New-PSSession -HostName $hostName -UserName $userName
-            Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
-            Import-Module ./Util -DisableNameChecking
-            Import-Module ./Import-ModuleRemotely.ps1
-            Import-ModuleRemotely "Util" $session
-            $unused = $bag.Add($session, $false)
-        }
-        $global:RemoteHosts | ForEach-Object -Parallel $initialiseHostsScriptBlock
-        
-        foreach ($session in $threadSafeBag.Keys)
-        {
-            Write-Host("Added session")
-            $global:RemoteSessions.Add($session, $false)
-        }
-    }
-    
-    $unused = 
-    {
-        foreach ($remoteHost in $global:RemoteHosts)
-        {
-            $userName = $remoteHost.UserName
-            $hostName = $remoteHost.HostName
-            Write-Host("Intialising session as {0} on {1}" -f $userName, $hostName)
-            $session = New-PSSession -HostName $hostName -UserName $userName
-            Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
-            $global:RemoteSessions.Add($session, $false)
-            Write-Host "added session"
-            Import-ModuleRemotely "Util" $session
-            Write-Host "Util module added"
-        }
-    }
     
     Write-Host "Remote Sessions Initialised"
 }
 
 function Running-JobQueue()
 {
+    Write-Host("Running-JobQueue with {0} tasks" -f $JobQueue.Count)
     $returnValues = @{}
     do
     {
@@ -118,8 +80,19 @@ function Running-JobQueue()
 
             if ($jobCompleted)
             {
-                $arrayOutput = Receive-Job $job
-                $returnValues[$jobName] = $arrayOutput
+                $jobOutput = Receive-Job $job
+                $outputName = $jobOutput.OutputName
+                $returnValues[$outputName] = $jobOutput
+                if ($jobOutput.OutputFiles)
+                {
+                    foreach ($localFileName in $jobOutput.OutputFiles.Keys)
+                    {
+                        $remoteFileName = $jobOutput.OutputFiles[$localFileName]
+                        $localDestination = Join-Path -Path $task.HomeLocation -ChildPath $localFileName
+                        Copy-Item -Path $remoteFilename -Destination $localDestination -FromSession $task.Session -Force
+                        Invoke-Command -Session $session -Command { param($filename); Remove-Item $filename} -ArgumentList @($remoteFileName)
+                    }
+                }
                 Remove-Job -Job $job
                 $global:RemoteSessions[$task.Session] = $false
                 $jobsToRemove += $jobName
@@ -148,7 +121,8 @@ function Running-JobQueue()
                     $jobName = $job.Name
                     $RunningJobs[$jobName] = @{
                         'Job'=$job;
-                        "Session"=$session
+                        "Session"=$session;
+                        "HomeLocation"=$task.HomeLocation;
                     }
                     $addedJobs[$session] = $job
                     
