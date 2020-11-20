@@ -63,87 +63,86 @@ function Initialise-JobQueue($title, $remoteHostList, $localJobData, $modules)
     Write-Host "Remote Sessions Initialised"
 }
 
-function Running-JobQueue()
+function Step-JobQueue($returnValues)
 {
-    Write-Host("Running-JobQueue with {0} tasks" -f $JobQueue.Count)
-    $returnValues = @{}
-    do
+    $jobsToRemove = @()
+    foreach ($jobInfo in $RunningJobs.GetEnumerator())
     {
-        $jobsToRemove = @()
-        foreach ($jobInfo in $RunningJobs.GetEnumerator())
-        {
-            $jobName = $jobInfo.Key
-            $task = $jobInfo.Value
-            $job = $task.Job
-            
-            $jobCompleted = $job.State -eq "Completed"
-
-            if ($jobCompleted)
-            {
-                $jobOutput = Receive-Job $job
-                $outputName = $jobOutput.OutputName
-                $returnValues[$outputName] = $jobOutput
-                if ($jobOutput.OutputFiles)
-                {
-                    foreach ($localFileName in $jobOutput.OutputFiles.Keys)
-                    {
-                        $remoteFileName = $jobOutput.OutputFiles[$localFileName]
-                        $localDestination = Join-Path -Path $task.HomeLocation -ChildPath $localFileName
-                        Copy-Item -Path $remoteFilename -Destination $localDestination -FromSession $task.Session -Force
-                        Invoke-Command -Session $session -Command { param($filename); Remove-Item $filename} -ArgumentList @($remoteFileName)
-                    }
-                }
-                Remove-Job -Job $job
-                $global:RemoteSessions[$task.Session] = $false
-                $jobsToRemove += $jobName
-                $global:Finished++
-                $global:Running--
-                Update-JobQueueProgress
-            }
-        }
-        foreach ($jobName in $jobsToRemove)
-        {
-            $RunningJobs.Remove($jobName)
-        }
+        $jobName = $jobInfo.Key
+        $task = $jobInfo.Value
+        $job = $task.Job
         
-        if ($JobQueue.Count -gt 0)
-        {
-            $addedJobs = @{}
-            foreach ($remoteSessionInfo in $global:RemoteSessions.GetEnumerator()) 
-            {
-                $session = $remoteSessionInfo.Key
-                $status = $remoteSessionInfo.Value
+        $jobCompleted = $job.State -eq "Completed"
 
-                if ($status -eq $false)
+        if ($jobCompleted)
+        {
+            $jobOutput = Receive-Job $job
+            $outputName = $jobOutput.OutputName
+            $returnValues[$outputName] = $jobOutput
+            if ($jobOutput.OutputFiles)
+            {
+                foreach ($localFileName in $jobOutput.OutputFiles.Keys)
                 {
-                    $task = $JobQueue.DeQueue()
-                    $job = Invoke-Command $session -ScriptBlock $task.ScriptBlock -ArgumentList $task.Arguments -AsJob
-                    $jobName = $job.Name
-                    $RunningJobs[$jobName] = @{
-                        'Job'=$job;
-                        "Session"=$session;
-                        "HomeLocation"=$task.HomeLocation;
-                    }
-                    $addedJobs[$session] = $job
-                    
-                    $global:Running += 1
-                    
-                    Update-JobQueueProgress
-                    if ($JobQueue.Count -eq 0)
-                    {
-                        break
-                    }
+                    $remoteFileName = $jobOutput.OutputFiles[$localFileName]
+                    $localDestination = Join-Path -Path $task.HomeLocation -ChildPath $localFileName
+                    Copy-Item -Path $remoteFilename -Destination $localDestination -FromSession $task.Session -Force
+                    Invoke-Command -Session $task.Session -Command { param($filename); Remove-Item $filename} -ArgumentList @($remoteFileName)
                 }
             }
-            foreach ($sessionJobs in $addedJobs.GetEnumerator())
+            Remove-Job -Job $job
+            $global:RemoteSessions[$task.Session] = $false
+            $jobsToRemove += $jobName
+            $global:Finished++
+            $global:Running--
+            Update-JobQueueProgress
+        }
+    }
+    foreach ($jobName in $jobsToRemove)
+    {
+        $RunningJobs.Remove($jobName)
+    }
+    
+    if ($JobQueue.Count -gt 0)
+    {
+        $addedJobs = @{}
+        foreach ($remoteSessionInfo in $global:RemoteSessions.GetEnumerator()) 
+        {
+            $session = $remoteSessionInfo.Key
+            $status = $remoteSessionInfo.Value
+
+            if ($status -eq $false)
             {
-                $global:RemoteSessions[$sessionJobs.Key] = $sessionJobs.Value
+                $task = $JobQueue.DeQueue()
+                $job = Invoke-Command $session -ScriptBlock $task.ScriptBlock -ArgumentList $task.ArgumentList -AsJob
+                $jobName = $job.Name
+                $RunningJobs[$jobName] = @{
+                    'Job'=$job;
+                    "Session"=$session;
+                    "HomeLocation"=$task.HomeLocation;
+                }
+                $addedJobs[$session] = $job
+                
+                $global:Running += 1
+                
+                Update-JobQueueProgress
+                if ($JobQueue.Count -eq 0)
+                {
+                    break
+                }
             }
         }
-    } while ($global:Running -gt 0 -or $JobQueue.Count -gt 0)
+        foreach ($sessionJobs in $addedJobs.GetEnumerator())
+        {
+            $global:RemoteSessions[$sessionJobs.Key] = $sessionJobs.Value
+        }
+    }
 
     Update-JobQueueProgress
+    return $jobsToRemove.Count -gt 0
+}
 
+function Complete-JobQueue()
+{
     Write-Host "Close Remote Sessions"
     foreach ($remoteSession in $global:RemoteSessions.GetEnumerator())
     {
@@ -153,8 +152,43 @@ function Running-JobQueue()
         $global:RemoteSessions = @{}
     }
     Write-Host "Remote Sessions Closed"
+}
+
+function Test-Running()
+{
+    return $global:Running -gt 0 -or $JobQueue.Count -gt 0
+}
+
+function Running-JobQueue()
+{
+    Write-Host("Running-JobQueue with {0} tasks" -f $JobQueue.Count)
+    $returnValues = @{}
+    do
+    {
+        Step-JobQueue $returnValues
+    } while (Test-Running)
+
+    Update-JobQueueProgress
+
+    Complete-JobQueue
 
     return $returnValues
+}
+
+function Invoke-Locally($jobInfo)
+{
+    $returnValue = Invoke-Command -ScriptBlock $jobInfo.ScriptBlock -ArgumentList $jobInfo.ArgumentList
+    if ($returnValue.OutputFiles)
+    {
+        foreach ($localFileName in $returnValue.OutputFiles.Keys)
+        {
+            $remoteFileName = $returnValue.OutputFiles[$localFileName]
+            $localDestination = Join-Path -Path $jobInfo.HomeLocation -ChildPath $localFileName
+            Copy-Item -Path $remoteFilename -Destination $localDestination -Force
+            Remove-Item -Path $remoteFilename
+        }
+    }
+    return $returnValue
 }
 
 function Test-RemoteQueue()
@@ -198,9 +232,9 @@ function Test-RemoteQueue()
         return $total
     }
 
-    $task = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Multiply")}
-    $task2 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Add")}
-    $task3 = @{"ScriptBlock"=$testScriptBlock; "Arguments"=@("Lerp")}
+    $task = @{"ScriptBlock"=$testScriptBlock; "ArgumentList"=@("Multiply")}
+    $task2 = @{"ScriptBlock"=$testScriptBlock; "ArgumentList"=@("Add")}
+    $task3 = @{"ScriptBlock"=$testScriptBlock; "ArgumentList"=@("Lerp")}
     
     for ($i = 0; $i -lt 1000; $i++)
     {

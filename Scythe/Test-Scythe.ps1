@@ -6,6 +6,17 @@ $ErrorActionPreference = 'Stop'
 
 Get-Job | Remove-Job
 Get-PSSession | Remove-PSSession
+$PendingStatesDirectoryName = "PendingStates"
+$PendingStatesPath = Join-Path -Path $PSScriptRoot -ChildPath $PendingStatesDirectoryName
+New-Item -ItemType Directory -Force -Path $PendingStatesPath
+$AllPendingStatesPath = Join-Path -Path $PendingStatesPath -ChildPath "*"
+$AllPendingStatesPath | Remove-Item
+
+$ResolvedStatesPath = Join-Path -Path $PSScriptRoot -ChildPath "ResolvedStates"
+New-Item -ItemType Directory -Force -Path $ResolvedStatesPath
+$AllResolvedStatesPath = Join-Path -Path $ResolvedStatesPath -ChildPath "*"
+$AllResolvedStatesPath | Remove-Item
+
 
 $HomeLocation = $PWD
 
@@ -70,7 +81,7 @@ function Import-Faction($xmlFaction)
         $hex["YPosition"] = $hexXML.YPosition -as [int]
         $hex["Resources"] = Import-ResourceList ($hexXML.Resources -as [string])
         $hex["Position"] = ("{0}, {1}" -f $hex["XPosition"], $hex["YPosition"])
-        $thisFaction.Map.Add($hex["Position"], $hex)    
+        $thisFaction.Map[$hex["Position"]] = $hex
     }
     return $thisFaction
 }
@@ -139,6 +150,8 @@ function Build-Player($faction, $playmat)
     $player["Resources"] = Merge-ResourceList $faction.Resources $playmat.Resources
     $player["Faction"] = $faction
     $player["Playmat"] = $playmat
+    $player["Round"] = 0
+    [System.Collections.ArrayList]$player["ActionHistory"] = @()
     return $player
 }
 
@@ -146,9 +159,9 @@ Import-Factions $FactionsXML
 Import-Playmats $PlaymatsXML
 
 $TestPlayerScriptBlock = { 
-    param($player, $rounds)
+    param($player, $rounds, $pendingStatesDirectoryName)
     $returnValue = @{"OutputName"=$player.Name;}
-    Test-Player $player $rounds $returnValue
+    Test-Player $player $rounds $pendingStatesDirectoryName $returnValue
     return $returnValue
 }
 function Test-All()
@@ -156,7 +169,7 @@ function Test-All()
     $piHost = @{"HostName"="pi@192.168.86.118"}
     $localhost = @{"HostName"="lorda@127.0.0.1"}
 
-    $remoteList = @($localhost)
+    $remoteList = @($localhost, $localhost, $localhost, $localhost, $piHost)
     $localData = @{}
     $modules = @("Scythe")
     Initialise-JobQueue "Test" $remoteList $localData $modules
@@ -169,6 +182,8 @@ function Test-All()
         {
             $playmat = $AllPlaymats[$playmatName]
             $player = Build-Player $faction $playmat
+            $fullpath = Join-Path -Path $PendingStatesPath -ChildPath ("{0}.{1}.xml" -f $player.Name, $player.Round)
+            Save-Player $player $fullpath
             $AllPlayers[$player.Name] = $player
         }
     }
@@ -177,46 +192,52 @@ function Test-All()
 
     # Test Locally
     Write-Host("Test Locally")
-    $localReturnValues = @{}
-    foreach ($playerName in $AllPlayers.Keys)
+    do
     {
-        $player = Deep-Copy2 $AllPlayers[$playerName]
-        $returnValue = Invoke-Command -ScriptBlock $TestPlayerScriptBlock -ArgumentList @($player, $rounds)
-        if ($returnValue.OutputFiles)
+        $playerStates = Get-Item $AllPendingStatesPath | Select-Object -exp FullName
+        Write-Host("{0} pending states" -f $playerStates.Count)
+        $localReturnValues = @{}
+        foreach ($playerState in $playerStates)
         {
-            foreach ($localFileName in $returnValue.OutputFiles.Keys)
-            {
-                $remoteFileName = $returnValue.OutputFiles[$localFileName]
-                $localDestination = Join-Path -Path $HomeLocation -ChildPath $localFileName
-                Copy-Item -Path $remoteFilename -Destination $localDestination -Force
-                Remove-Item -Path $remoteFilename
-            }
+            $player = Import-Clixml -Path $playerState
+            Move-Item -Path $playerState -Destination $ResolvedStatesPath
+            $task = @{"ScriptBlock"=$TestPlayerScriptBlock; "ArgumentList"=@(Deep-Copy2 $player, $rounds, $PendingStatesDirectoryName); "HomeLocation"=$HomeLocation;}
+            $returnValue = Invoke-Locally $task
+            $localReturnValues[$returnValue.OutputName] = $returnValue    
         }
-        $localReturnValues[$returnValue.OutputName] = $returnValue
-    }
-    foreach ($retValue in $localReturnValues.GetEnumerator())
-    {
-        $jobName = $retValue.Key
-        $ret = $retValue.Value
-        Write-Host("{0}:{1}" -f $jobName, $ret)
-    }
+    } while ($playerStates.Count -gt 0)
 
     # Test Remotely
-    Write-Host("Test Remotely")
+    Write-Host("Clean Up Local Files")
     foreach ($playerName in $AllPlayers.Keys)
     {
-        $player = Deep-Copy2 $AllPlayers[$playerName]
-        $task = @{"ScriptBlock"=$TestPlayerScriptBlock; "Arguments"=@($player, $rounds); "HomeLocation"=$HomeLocation}
-        Add-JobToRemoteQueue $task
+        $player = $AllPlayers[$playerName]
+        $fullpath = Join-Path -Path $PendingStatesPath -ChildPath ("{0}.{1}.xml" -f $player.Name, $player.Round)
+        Save-Player $player $fullpath
     }
-    $remoteReturnValues = Running-JobQueue
-    foreach ($retValue in $remoteReturnValues.GetEnumerator())
+    $AllResolvedStatesPath | Remove-Item
+
+    Write-Host("Test Remotely")
+    do
     {
-        $jobName = $retValue.Key
-        $ret = $retValue.Value
-        Write-Host("{0}:{1}" -f $jobName, $ret)
-    }
-    
+        $playerStates = Get-Item $AllPendingStatesPath | Select-Object -exp FullName
+        foreach ($playerState in $playerStates)
+        {
+            $player = Import-Clixml -Path $playerState
+            Move-Item -Path $playerState -Destination $ResolvedStatesPath
+            $task = @{"ScriptBlock"=$TestPlayerScriptBlock; "ArgumentList"=@($player, $rounds, $PendingStatesDirectoryName); "HomeLocation"=$HomeLocation}
+            Add-JobToRemoteQueue $task
+        }
+        $remoteReturnValues = @{}
+        do
+        {
+            if (Step-JobQueue $remoteReturnValues)
+            {
+                break
+            }
+        } while (Jobs-Left)
+    } while ($playerStates.Count -gt 0)
+    Complete-JobQueue
 }
 
 Test-All
