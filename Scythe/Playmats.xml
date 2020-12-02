@@ -5,27 +5,58 @@
                 <Action Name="Move" Gain=">>" UnlockGain=">" />
                 <Action Name="Gain" Gain="$" UnlockGain="$" />
             </Top>
-            <Bottom Name="Upgrade" Cost="WW" Gain="#" />
+            <Bottom Name="Upgrade" Cost="OO" Gain="#$V" />
         </Column>
         <Column>
             <Top>
                 <Action Name="TradeResources" Cost="$" Gain="??" />
                 <Action Name="TradePopularity" Cost="$" Gain="@" UnlockGain="@" />
             </Top>
-            <Bottom Name="Deploy" Cost="MMMM" ReduceCost="MM" Gain="*" />
+            <Bottom Name="Deploy" Cost="MMMM" ReduceCost="MM" Gain="*V" />
         </Column>
         <Column>
             <Top>
-                <Action Name="Produce" Cost="^@$" Gain="%%" UnlockGain="%" />
+                <Action Name="Produce" Cost="" Gain="%%" UnlockGain="%" />
             </Top>
-            <Bottom Name="Build" Cost="WWWW" ReduceCost="WW" Gain="+$$" />
+            <Bottom Name="Build" Cost="WWWW" ReduceCost="WW" Gain="+$$V" />
         </Column>
         <Column>
             <Top>
                 <Action Name="BolsterPower" Cost="$" Gain="^^" UnlockGain="^" />
                 <Action Name="BolsterCard" Cost="$" Gain="=" UnlockGain="=" />
             </Top>
-            <Bottom Name="Enlist" Cost="FFF" ReduceCost="FF" Gain="|$$$" />
+            <Bottom Name="Enlist" Cost="FFF" ReduceCost="FF" Gain="|$$$V" />
         </Column>
     </Playmat>
+    <!--
+    <Playmat Name="Patriotic" Resources="@@$$$$$$">
+        <Column>
+            <Top>
+                <Action Name="Move" Gain=">>" UnlockGain=">" />
+                <Action Name="Gain" Gain="$" UnlockGain="$" />
+            </Top>
+            <Bottom Name="Upgrade" Cost="OO" Gain="#$V" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="BolsterPower" Cost="$" Gain="^^" UnlockGain="^" />
+                <Action Name="BolsterCard" Cost="$" Gain="=" UnlockGain="=" />
+            </Top>
+            <Bottom Name="Deploy" Cost="MMMM" ReduceCost="MMM" Gain="*$$$V" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="TradeResources" Cost="$" Gain="??" />
+                <Action Name="TradePopularity" Cost="$" Gain="@" UnlockGain="@" />
+            </Top>
+            <Bottom Name="Build" Cost="WWWW" ReduceCost="WW" Gain="+V" />
+        </Column>
+        <Column>
+            <Top>
+                <Action Name="Produce" Cost="" Gain="%%" UnlockGain="%" />
+            </Top>
+            <Bottom Name="Enlist" Cost="FFF" ReduceCost="F" Gain="|$$V" />
+        </Column>
+    </Playmat>
+    -->
 </Playmats>

@@ -1,8 +1,17 @@
 <Factions>
-    <Faction Name="Rusviet" Resources="^^^==" Benefit="Repeat">
+    <!--
+    <Faction Name="Rusviet" Resources="^^^==" Benefit="Relentless">
         <Hexes>
-            <Hex Terrain="Village" XPosition="-1" YPosition="0" Resources="!" />
-            <Hex Terrain="Mountain" XPosition="-1" YPosition="1" Resources="!" />
+            <Hex Terrain="Village" XPosition="-1" YPosition="0" Resources="!" Worker="W1" />
+            <Hex Terrain="Mountain" XPosition="-1" YPosition="1" Resources="!" Worker="W2" />
+            <Hex Terrain="Tundra" XPosition="-2" YPosition="1" Resources="O" />
+        </Hexes>
+    </Faction>
+    -->
+    <Faction Name="Saxony" Resources="^====" Benefit="CombatStars">
+        <Hexes>
+            <Hex Terrain="Mountain" XPosition="1" YPosition="-1" Resources="!" Worker="W1" />
+            <Hex Terrain="Tundra" XPosition="1" YPosition="0" Resources="!" Worker="W2" />
             <Hex Terrain="Village" XPosition="-2" YPosition="1" Resources="" />
         </Hexes>
     </Faction>

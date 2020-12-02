@@ -1,4 +1,3 @@
 *.pdf
-test*.xml
-/PendingStates
-/ResolvedStates
+/LocalResolvedStates
+/RemoteResolvedStates

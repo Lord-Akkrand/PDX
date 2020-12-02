@@ -11,6 +11,32 @@ function Deep-Copy($obj)
     return $ret
 }
 
+function Get-FormattedTime($timeInfo)
+{
+    $timeString = ""
+    $needMilliseconds = $True
+    if ([int]$timeInfo.Hours -gt 0)
+    {
+        $timeString = (' Hours="{0}"' -f $timeInfo.Hours)
+        $needMilliseconds = $False
+    }
+    if ([int]$timeInfo.Minutes -gt 0)
+    {
+        $timeString += (' Minutes="{0}"' -f $timeInfo.Minutes)
+        $needMilliseconds = $False
+    }
+    if ([int]$timeInfo.Seconds -gt 0)
+    {
+        $timeString += (' Seconds="{0}"' -f $timeInfo.Seconds)
+    }
+    if ($needMilliseconds)
+    {
+        $timeString += (' Milliseconds="{0}"' -f $timeInfo.Milliseconds)
+    }
+    return $timeString
+}
+
+
 function Deep-Copy2($obj)
 {
     $_TempCliXMLString  =   [System.Management.Automation.PSSerializer]::Serialize($obj, [int32]::MaxValue)

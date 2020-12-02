@@ -13,10 +13,15 @@ enum Resources {
     Wood = [int][char]'W'
     ResourceAny = [int][char]'?'
     Movement = [int][char]'>'
-    Mech = [int][char]'*'
-    Building = [int][char]'e'
+    Deploy = [int][char]'*'
+    Build = [int][char]'e'
     Upgrade = [int][char]'#'
-    Recruit = [int][char]'|'
+    Enlist = [int][char]'|'
+    Mill
+    Monument
+    Mine
+    Armory
+    BottomRow = [int][char]'V'
 }
 
 function Save-Player($player, $fullpath)
@@ -26,91 +31,277 @@ function Save-Player($player, $fullpath)
 
 function Resolve-Cost($resources, $cost)
 {
-    foreach ($resourceName in $cost.Keys)
+    $anyResource = 0
+    $resourceAny = [Resources]::ResourceAny -as [string]
+    if ($resources.ContainsKey($resourceAny) -and $resources[$resourceAny] -gt 0)
     {
-        if ($resources[$resourceName] -lt $cost[$resourceName])
+        $anyResource = $resources[$resourceAny]
+    }
+    foreach ($resourceString in $cost.Keys)
+    {
+        $resourceName = [Resources]::$resourceString -as [string]
+        $thisCost = $cost[$resourceName]
+        if ($thisCost -gt 0)
         {
-            return $false
+            $available = $resources[$resourceName]
+            
+            if ($anyResource -gt 0)
+            {
+                switch ($resourceName)
+                {
+                    ([Resources]::Food) { 
+                        $available += $anyResource 
+                    } 
+                    ([Resources]::Metal) { 
+                        $available += $anyResource 
+                    }
+                    ([Resources]::Oil) { 
+                        $available += $anyResource 
+                    }
+                    ([Resources]::Wood) { 
+                        $available += $anyResource 
+                    }
+                }
+            }
+            if ($available -lt $cost[$resourceName])
+            {
+                return $false
+            }
         }
     }
-    foreach ($resourceName in $cost.Keys)
+    $anySubtract = 0
+    foreach ($resourceString in $cost.Keys)
     {
-        $resources[$resourceName] -= $cost[$resourceName]
+        $resourceName = [Resources]::$resourceString -as [string]
+        $thisCost = $cost[$resourceName]
+        if ($thisCost -gt 0)
+        {
+            if ($resources[$resourceName] -ge $thisCost)
+            {
+                $resources[$resourceName] -= $thisCost
+            }
+            else {
+                $takeAny += $thisCost - $resources[$resourceName]
+                $resources[$resourceName] = 0
+            }
+        }
     }
+    $resources[$resourceAny] -= $takeAny
     return $true
 }
 
-function Resolve-Resources($map, $cost)
+function Merge-ResourceList($list1, $list2)
 {
-    $costCopy = Deep-Copy2 $cost
-    $mapCopy = Deep-Copy2 $map
-    foreach ($resourceName in $cost.Keys)
+    $resourceDict = @{}
+    foreach ($resourceKey in [Resources].GetEnumNames())
     {
-        foreach ($hexName in $mapCopy.Keys)
+        $rn = [Resources]::$resourceKey -as [string]
+        $resourceDict[$rn] = $list1[$rn] + $list2[$rn]
+    }
+
+    return $resourceDict
+}
+
+function Add-Resources($player, $resources)
+{
+    foreach ($resourceName in $resources.Keys)
+    {
+        $gainString = ($resourceName -as [string]) + ($resources[$resourceName] -as [string])
+        $player["HistoryString"] += $gainString
+    }
+    $player.Resources = Merge-ResourceList $player.Resources $resources
+}
+
+function Add-ResourcesToHex($player, $hex, $resources)
+{
+    $player["HistoryString"] += $hex.Position
+    foreach ($resourceName in $resources.Keys)
+    {
+        $gainString = ($resourceName -as [string]) + ($resources[$resourceName] -as [string])
+        $player["HistoryString"] += $gainString
+    }
+    $hex.Resources = Merge-ResourceList $hex.Resources $resources
+    $player.Resources = Merge-ResourceList $player.Resources $resources
+}
+
+
+function Resolve-Produce($player, $outPlayers)
+{
+    [System.Collections.ArrayList]$canProduce = @()
+    [System.Collections.ArrayList]$willProduce = @()
+    foreach ($hexPosition in $player.Faction.Map.Keys)
+    {
+        $hex = $player.Faction.Map[$hexPosition]
+        if ($hex["Resources"].ContainsKey([Resources]::Mill -as [string]))
         {
-            $hex = $mapCopy[$hexName]
-            if ($hex.Resources[$resourceName] -gt 0)
+            $unused = $willProduce.Add($hexPosition)
+        }
+        elseif ($hex["Resources"].ContainsKey([Resources]::Worker -as [string]))
+        {
+            $unused = $canProduce.Add($hexPosition)
+        }
+    }
+    
+    $outProduce = @{}
+    
+    if ($canProduce.Count -gt 2)
+    {
+        Write-Host "deal with multiple production hexes"
+    }
+    else {
+        $thisWillProduce = $willProduce + $canProduce
+        $outProduce[$player] = $thisWillProduce
+    }
+    
+    foreach ($thisPlayer in $outProduce.Keys)
+    {
+        $thisWillProduce = $outProduce[$thisPlayer]
+        foreach ($hexPosition in $thisWillProduce)
+        {
+            $hex = $thisPlayer.Faction.Map[$hexPosition]
+            $resources = @{}
+            $production = 0
+            $production += $hex["Resources"][[Resources]::Worker -as [string]]
+            $production += $hex["Resources"][[Resources]::Mill -as [string]]
+            switch ($hex.Terrain)
             {
-                $amountToPay = [math]::min($costCopy[$resourceName], $hex.Resources[$resourceName])
-                $costCopy[$resourceName] -= $amountToPay
-                $hex.Resources[$resourceName] -= $amountToPay
+                "Village" {
+                    $production = [math]::Min(8 - $thisPlayer.Resources[[Resources]::Worker -as [string]], $production)
+                    $resources[[Resources]::Worker -as [string]] += $production
+                }
+                "Tundra" { $resources[[Resources]::Oil -as [string]] += $production }
+                "Mountain" { $resources[[Resources]::Metal -as [string]] += $production }
+                "Farm" { $resources[[Resources]::Food -as [string]] += $production }
+                "Forest" { $resources[[Resources]::Wood -as [string]] += $production }
+            }
+            if ($hex.Terrain -eq "Village")
+            {
+                Add-ResourcesToHex $thisPlayer $hex $resources
+            }
+            else {
+                Add-Resources $thisPlayer $resources
+            }
+        }
+    }
+}
+
+function Select-Action($player, $action, $outPlayers)
+{
+    $unused = $player.ActionHistory.Add($action.Name)
+    $player["HistoryString"] += $action.Name
+    
+    switch ($action.Name)
+    {
+        "Gain" { Add-Resources $player $action.Gain}
+        "TradeResources" { 
+            Add-Resources $player $action.Gain
+        }
+        "TradePopularity" { Add-Resources $player $action.Gain}
+        "BolsterPower" { Add-Resources $player $action.Gain}
+        "BolsterCard" { Add-Resources $player $action.Gain}
+        "Move" {}
+        "Produce" { Resolve-Produce $player $outPlayers}
+        "Upgrade" { 
+            #Resolve-Upgrade $player $outPlayers
+            Add-Resources $player $action.Gain 
+        }
+        "Deploy" { 
+            #Resolve-Deploy $player $outPlayers
+            Add-Resources $player $action.Gain 
+        }
+        "Build" { 
+            #Resolve-Build $player $outPlayers
+            Add-Resources $player $action.Gain 
+        }
+        "Enlist" { 
+            #Resolve-Enlist $player $outPlayers
+            Add-Resources $player $action.Gain 
+        }
+    }
+}
+
+function Select-Column($player, $column, $outPlayers)
+{
+    $unused = $player.ColumnHistory.Add($column.Name)
+    $player["HistoryString"] += $column.Name
+}
+
+function Step-Round($originalPlayer)
+{
+    $outputStates = @{}
+    $playmat = $originalPlayer.Playmat
+    $originalPlayer.Round++
+    $md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+    $utf8 = New-Object -TypeName System.Text.UTF8Encoding
+
+    $lastColumn = $player.ColumnHistory[-1]
+    if ($originalPlayer.Faction.Benefit -eq "Relentless")
+    {
+        $lastColumn = ""
+    }
+    foreach ($column in $playmat.Columns)
+    {
+        if ($column.Name -ne $lastColumn)
+        {
+            [System.Collections.ArrayList]$possibleChoices = @()
+            $player = Deep-Copy2 $originalPlayer
+            
+            Select-Column $player $column
+
+            if ($player.Resources[[Resources]::ResourceAny -as [string]] -gt 0)
+            {
+                $localVar = 1
+                $localVar++
+            }
+
+            [System.Collections.ArrayList]$topPlayers = @($player)
+            if (Resolve-Cost $player.Resources $column.Top.Cost)
+            {
+                Select-Action $player $column.Top $topPlayers
+            }
+            foreach ($topPlayer in $topPlayers)
+            {
+                [System.Collections.ArrayList]$bottomPlayers = @($topPlayer)
+                
+                if ($column.Name -eq "Gain Upgrade")
+                {
+                    $localVar = 1
+                    $localVar++
+                }
+                
+
+                if (Resolve-Cost $topPlayer.Resources $column.Bottom.Cost)
+                {
+                    Select-Action $topPlayer $column.Bottom $bottomPlayers
+                }
+
+                foreach ($bottomPlayer in $bottomPlayers)
+                {   
+                    $historyString = $bottomPlayer.HistoryString
+                    
+                    $hash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($historyString)))
+                    $choicename = ("{0}.{1}.{2}" -f $bottomPlayer.Name, $bottomPlayer.Round, $hash)
+                    $bottomPlayer.CurrentName = $choicename
+                    $outputStates[$choicename] = Deep-Copy2 $bottomPlayer
+                }
+
             }
         }
     }
 
-    foreach ($resourceName in $cost.Keys)
-    {
-        if ($costCopy[$resourceName] -gt 0)
-        {
-            return $false
-        }
-    }
-    $map = $mapCopy
-    return $true
-}
-
-
-function Select-Action($player, $action)
-{
-    $unused = $player.ActionHistory.Add($action.Name)
-}
-function Step-Round($originalPlayer, $pendingStatesPath)
-{
-    $outputFiles = @{}
-    $playmat = $originalPlayer.Playmat
-    $originalPlayer.Round++
-    foreach ($column in $playmat.Columns)
-    {
-        $player = Deep-Copy2 $originalPlayer
-        $TempFile = New-TemporaryFile
-        if (Resolve-Cost $player.Resources $column.Top.Cost)
-        {
-            Select-Action $player $column.Top
-        }
-        if (Resolve-Resources $player.Faction.Map $column.Bottom.Cost)
-        {
-            Select-Action $player $column.Bottom
-        }
-        $tempName = Split-Path $TempFile.FullName -leaf
-        $choicename = ("{0}.{1}.{2}.xml" -f $player.Name, $player.Round, $tempName)
-        Export-Clixml -Path $TempFile.FullName -InputObject $player
-        $outputFile = Join-Path -Path $pendingStatesPath -ChildPath $choiceName
-        $outputFiles[$outputFile] = $TempFile.FullName
-    }
-
-    return $outputFiles
+    return $outputStates
 }
 
 function Test-Player($player, $rounds, $pendingStatesPath, $returnValue)
 {
     $returnValue["Output"] = ("Test Player {1} for {1} rounds" -f $player.Name, $rounds)
-    
-    $outputFiles = @{}
+
+    $outputStates = @{}
     if ($player.Round -lt $rounds)
     {
-        $outputFiles = Step-Round $player $pendingStatesPath
+        $outputStates = Step-Round $player
     }
-    $returnValue["OutputFiles"] = $outputFiles
+    $returnValue["OutputStates"] = $outputStates
 }
 
 Export-ModuleMember -Function * -Alias * -Variable * -Cmdlet *

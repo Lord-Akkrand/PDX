@@ -36,7 +36,7 @@ function Update-JobQueueProgress
     Write-Progress -Activity $global:Title -Status $status -Id $global:ProgressID -PercentComplete $percentComplete
 }
 
-$BatchID = 0
+$BatchID = 1
 
 function Initialise-JobQueue($title, $remoteHostList, $localJobData, $modules)
 {
@@ -48,15 +48,25 @@ function Initialise-JobQueue($title, $remoteHostList, $localJobData, $modules)
     $global:RemoteHosts = $remoteHostList
 
     Write-Host "Initialise Remote Sessions"
-    $sessions = New-PSSession -SSHConnection $global:RemoteHosts
-    foreach ($session in $sessions)
+    $RemoteBlocks = @()
+    $blockSize = 4
+    for ($i = 0; $i -lt $remoteHostList.count; $i += $blockSize) 
     {
-        Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
-        $global:RemoteSessions.Add($session, $false)
-        Import-ModuleRemotely "Util" $session
-        foreach ($mod in $modules)
+        $RemoteBlocks += ,@($remoteHostList[$i..($i+$blockSize-1)]);
+    }
+    foreach ($remoteBlock in $RemoteBlocks)
+    {
+        Write-Host("Initialise {0} Sessions" -f $remoteBlock.Count)
+        $sessions = New-PSSession -SSHConnection $remoteBlock
+        foreach ($session in $sessions)
         {
-            Import-ModuleRemotely $mod $session
+            Invoke-Command $session -ScriptBlock { param($data); $SessionJobData = $data; } -ArgumentList $localJobData
+            $global:RemoteSessions.Add($session, $false)
+            Import-ModuleRemotely "Util" $session
+            foreach ($mod in $modules)
+            {
+                Import-ModuleRemotely $mod $session
+            }
         }
     }
     
