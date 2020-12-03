@@ -132,11 +132,11 @@ function Resolve-Produce($player, $outPlayers)
     foreach ($hexPosition in $player.Faction.Map.Keys)
     {
         $hex = $player.Faction.Map[$hexPosition]
-        if ($hex["Resources"].ContainsKey([Resources]::Mill -as [string]))
+        if ($hex["Resources"][[Resources]::Mill -as [string]] -gt 0)
         {
             $unused = $willProduce.Add($hexPosition)
         }
-        elseif ($hex["Resources"].ContainsKey([Resources]::Worker -as [string]))
+        elseif ($hex["Resources"][[Resources]::Worker -as [string]] -gt 0)
         {
             $unused = $canProduce.Add($hexPosition)
         }
@@ -185,6 +185,63 @@ function Resolve-Produce($player, $outPlayers)
     }
 }
 
+function Get-PositioningHash($workerPositions)
+{
+    $positionString = ""
+    foreach ($position in $workerPositions.Keys)
+    {
+        $count = $workerPositions[$position]
+        $positionString = ("{0}[{1}:{2}]" -f $positionString, $position, $count)
+    }
+    return $positionString
+}
+
+function Resolve-Move($player, $resources, $outPlayers)
+{
+    #find all the individual workers that can move
+    $workerPositions = [System.Collections.Specialized.OrderedDictionary]@{}
+    [System.Collections.ArrayList]$workers = @()
+    foreach ($hexPosition in $player.Faction.Map.Keys)
+    {
+        $hex = $player.Faction.Map[$hexPosition]
+        $numWorkers = $hex["Resources"][[Resources]::Worker -as [string]]
+        if ($numWorkers -gt 0)
+        {
+            $workerPositions[$hex.Position] = ($workerPositions[$hex.Position] -as [int]) + $numWorkers
+            $unused = $workers.Add($hex.Position)
+        }
+    }
+    $currentStateString = Get-PositioningHash $workerPositions
+    #for each worker that can move, find out where it can move to
+    [System.Collections.ArrayList]$possibleMoves = @()
+    foreach($workerPosition in $workers)
+    {
+        $hex = $player.Faction.Map[$workerPosition]
+        foreach ($linkToPosition in $hex.Links.Keys)
+        {
+            if ($hex.Links[$linkToPosition] -eq $false)
+            {
+                # not a river crossing, you can move here
+                $unused = $possibleMoves.Add(@{"From"=$workerPosition; "To"=$linkToPosition})
+            }
+        }
+    }
+    $numberMoves = $resources[[Resources]::Movement -as [string]]
+
+    #can make from zero up to $numberMoves changes
+    $outputStates = @{}
+    $outputStates[$currentStateString] = $player
+    #Write-Host("<{0}> possible moves" -f $possibleMoves.Count)
+
+    $outputStates.Remove($currentStateString)
+    foreach ($outputStateString in $outputStates.Keys)
+    {
+        $outputPlayer = $outputStates[$outputStateString]
+        $unused = $outPlayers.Add($outputPlayer)
+        compile fail he3ere I am
+    }
+}
+
 function Select-Action($player, $action, $outPlayers)
 {
     $unused = $player.ActionHistory.Add($action.Name)
@@ -199,7 +256,7 @@ function Select-Action($player, $action, $outPlayers)
         "TradePopularity" { Add-Resources $player $action.Gain}
         "BolsterPower" { Add-Resources $player $action.Gain}
         "BolsterCard" { Add-Resources $player $action.Gain}
-        "Move" {}
+        "Move" { Resolve-Move $player $action.Gain $outPlayers }
         "Produce" { Resolve-Produce $player $outPlayers}
         "Upgrade" { 
             #Resolve-Upgrade $player $outPlayers

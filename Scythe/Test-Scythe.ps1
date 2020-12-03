@@ -85,11 +85,16 @@ function Import-Faction($xmlFaction)
     {
         $hex = @{}
         $hex["Terrain"] = $hexXML.Terrain -as [string]
-        $hex["XPosition"] = $hexXML.XPosition -as [int]
-        $hex["YPosition"] = $hexXML.YPosition -as [int]
+        $hex["Position"] = $hexXML.Position -as [string]
+        $hex["Links"] = @{} #Position/RiverBool
+        foreach ($linkXML in $hexXML.Links.ChildNodes)
+        {
+            $linkTo = $linkXML.LinkTo -as [string]
+            $river = [System.Convert]::ToBoolean($linkXML.River -as [string])
+            $hex["Links"][$linkTo] = $river
+        }
         $hex["Resources"] = Import-ResourceList ($hexXML.Resources -as [string])
         $thisFaction.Resources = Merge-ResourceList $thisFaction.Resources $hex["Resources"]
-        $hex["Position"] = ("{0}, {1}" -f $hex["XPosition"], $hex["YPosition"])
         [System.Collections.ArrayList]$hex["Workers"] = @()
         $workerString = $hexXML.Worker -as [string]
         if ($workerString -ne "")
@@ -251,7 +256,7 @@ function Test-All()
         }
     }
 
-    $rounds = 1
+    $rounds = 3
 
     $testLocal = $true
     if ($testLocal)

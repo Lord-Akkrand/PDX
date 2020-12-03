@@ -10,9 +10,24 @@
     -->
     <Faction Name="Saxony" Resources="^====" Benefit="CombatStars">
         <Hexes>
-            <Hex Terrain="Mountain" XPosition="1" YPosition="-1" Resources="!" Worker="W1" />
-            <Hex Terrain="Tundra" XPosition="1" YPosition="0" Resources="!" Worker="W2" />
-            <Hex Terrain="Village" XPosition="-2" YPosition="1" Resources="" />
+            <Hex Terrain="Mountain" Position="1,-1" Resources="!" Worker="W1">
+                <Links>
+                    <Link LinkTo="-2,1" River="false" />
+                    <Link LinkTo="1,0" River="false" />
+                </Links>
+            </Hex>
+            <Hex Terrain="Tundra" Position="1,0" Resources="!" Worker="W2">
+                <Links>
+                    <Link LinkTo="-2,1" River="false" />
+                    <Link LinkTo="1,-1" River="false" />
+                </Links>
+            </Hex>
+            <Hex Terrain="Village" Position="-2,1" Resources="">
+                <Links>
+                    <Link LinkTo="1,-1" River="false" />
+                    <Link LinkTo="1,0" River="false" />
+                </Links>
+            </Hex>
         </Hexes>
     </Faction>
 </Factions>
